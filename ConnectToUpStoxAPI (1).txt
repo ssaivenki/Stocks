@@ -1,0 +1,141 @@
+eyJ0eXAiOiJKV1QiLCJrZXlfaWQiOiJza192MS4wIiwiYWxnIjoiSFMyNTYifQ.eyJzdWIiOiJISjE1NzYiLCJqdGkiOiI2NDVjNTc3MDMxODRkMTI2MDRkMzU4NWUiLCJpc011bHRpQ2xpZW50IjpmYWxzZSwiaXNBY3RpdmUiOnRydWUsInNjb3BlIjpbImludGVyYWN0aXZlIiwiaGlzdG9yaWNhbCJdLCJpYXQiOjE2ODM3NzMyOTYsImlzcyI6InVkYXBpLWdhdGV3YXktc2VydmljZSIsImV4cCI6MTY4Mzg2MTQ5Nn0.Q9wG7w4H6JLC7msqYzdPJJEH5Vh0iin_l63NiiBTyRY
+
+
+Authentication
+https://api-v2.upstox.com/login/authorization/dialog?response_type=code&client_id=0955f132-f4da-48ec-b0e5-f36817c38ac6&redirect_uri=https%3A%2F%2Fupstox.com%3A3000
+
+
+
+Get Token
+curl -X 'POST' 'https://api-v2.upstox.com/login/authorization/token' -H 'accept: application/json' -H 'Api-Version: 2.0' -H 'Content-Type: application/x-www-form-urlencoded' -d 'code=NuikP8&client_id=0955f132-f4da-48ec-b0e5-f36817c38ac6&redirect_uri=https%3A%2F%2Fupstox.com%3A3000&client_secret=eh6x43yagv&grant_type=authorization_code'
+
+
+
+
+curl -X 'GET' \
+ 'https://api-v2.upstox.com/user/profile'\ 
+ -H 'accept: application/json'\
+ -H 'Api-Version: 2.0'\
+ -H 'Authorization:  eyJ0eXAiOiJKV1QiLCJrZXlfaWQiOiJza192MS4wIiwiYWxnIjoiSFMyNTYifQ.eyJzdWIiOiJISjE1NzYiLCJqdGkiOiI2NDVjNTc3MDMxODRkMTI2MDRkMzU4NWULCJpc011bHRpQ2xpZW50IjpmYWxzZSwiaXNBY3RpdmUiOnRydWUsInNjb3BlIjpbImludGVyYWN0aXZlIiwiaGlzdG9yaWNhbCJdLCJpYXQiOjE2ODM1MzIxOTQsImlzcyI6InVkYXBpLWdhdGV3YXktc2VydmljZSIsImV4cCI6MTY4MzYyMDM5NH0.hZrloRLgPXgMzXCNkUMXzs7Fh52Kz1Xx8eTb-nFML-U' 
+
+
+
+curl -X 'GET'  'https://api-v2.upstox.com/user/profile' -H 'accept: application/json' -H 'Api-Version: 2.0' -H 'Authorization: Bearer   eyJ0eXAiOiJKV1QiLCJrZXlfaWQiOiJza192MS4wIiwiYWxnIjoiSFMyNTYifQ.eyJzdWIiOiJISjE1NzYiLCJqdGkiOiI2NDVjNTc3MDMxODRkMTI2MDRkMzU4NWULCJpc011bHRpQ2xpZW50IjpmYWxzZSwiaXNBY3RpdmUiOnRydWUsInNjb3BlIjpbImludGVyYWN0aXZlIiwiaGlzdG9yaWNhbCJdLCJpYXQiOjE2ODM1MzIxOTQsImlzcyI6InVkYXBpLWdhdGV3YXktc2VydmljZSIsImV4cCI6MTY4MzYyMDM5NH0.hZrloRLgPXgMzXCNkUMXzs7Fh52Kz1Xx8eTb-nFML-U' 
+
+
+curl -X 'GET' \
+  'https://api-v2.upstox.com/market-quote/ohlc?symbol=NSE_EQ%7CINE009A01021,NSE_EQ%7CINE075A01022&interval=I1' \
+  -H 'accept: application/json' \
+  -H 'Api-Version: 2.0' \
+  -H 'Authorization: Bearer   eyJ0eXAiOiJKV1QiLCJrZXlfaWQiOiJza192MS4wIiwiYWxnIjoiSFMyNTYifQ.eyJzdWIiOiJISjE1NzYiLCJqdGkiOiI2NDVjNTc3MDMxODRkMTI2MDRkMzU4NWULCJpc011bHRpQ2xpZW50IjpmYWxzZSwiaXNBY3RpdmUiOnRydWUsInNjb3BlIjpbImludGVyYWN0aXZlIiwiaGlzdG9yaWNhbCJdLCJpYXQiOjE2ODM1MzIxOTQsImlzcyI6InVkYXBpLWdhdGV3YXktc2VydmljZSIsImV4cCI6MTY4MzYyMDM5NH0.hZrloRLgPXgMzXCNkUMXzs7Fh52Kz1Xx8eTb-nFML-U'
+
+curl -X 'GET' \
+   'https://api-v2.upstox.com/market-quote/quotes?symbol=NSE_EQ%7CINE009A01021,NSE_EQ%7CINE075A01022' \
+ -H 'accept: application/json' \
+ -H 'Api-Version: 2.0' \
+ -H 'Authorization: Bearer  eyJ0eXAiOiJKV1QiLCJrZXlfaWQiOiJza192MS4wIiwiYWxnIjoiSFMyNTYifQ.eyJzdWIiOiJISjE1NzYiLCJqdGkiOiI2NDVjNTc3MDMxODRkMTI2MDRkMzU4NWULCJpc011bHRpQ2xpZW50IjpmYWxzZSwiaXNBY3RpdmUiOnRydWUsInNjb3BlIjpbImludGVyYWN0aXZlIiwiaGlzdG9yaWNhbCJdLCJpYXQiOjE2ODM1MzIxOTQsImlzcyI6InVkYXBpLWdhdGV3YXktc2VydmljZSIsImV4cCI6MTY4MzYyMDM5NH0.hZrloRLgPXgMzXCNkUMXzs7Fh52Kz1Xx8eTb-nFML-U'
+
+
+
+
+sai@sai:/home/seqlap29/Sai/Projects/upstox/new$ curl -X 'POST' 'https://api-v2.upstox.com/login/authorization/token' -H 'accept: application/json' -H 'Api-Version: 2.0' -H 'Content-Type: application/x-www-form-urlencoded' -d 'code=gWudVF&client_id=0955f132-f4da-48ec-b0e5-f36817c38ac6&redirect_uri=https%3A%2F%2Fupstox.com%3A3000&client_secret=eh6x43yagv&grant_type=authorization_code'
+{"email":"saivenki@hotmail.com","exchanges":["NSE","BSE","NFO","CDS"],"products":["OCO","D","CO","I"],"broker":null,"user_id":"HJ1576","user_name":"SAIVENKATESH SUBRAMONIAM","order_types":["MARKET","LIMIT","SL","SL-M"],"user_type":null,"access_token":" eyJ0eXAiOiJKV1QiLCJrZXlfaWQiOiJza192MS4wIiwiYWxnIjoiSFMyNTYifQ.eyJzdWIiOiJISjE1NzYiLCJqdGkiOiI2NDVjNTc3MDMxODRkMTI2MDRkMzU4NWULCJpc011bHRpQ2xpZW50IjpmYWxzZSwiaXNBY3RpdmUiOnRydWUsInNjb3BlIjpbImludGVyYWN0aXZlIiwiaGlzdG9yaWNhbCJdLCJpYXQiOjE2ODM1MzIxOTQsImlzcyI6InVkYXBpLWdhdGV3YXktc2VydmljZSIsImV4cCI6MTY4MzYyMDM5NH0.hZrloRLgPXgMzXCNkUMXzs7Fh52Kz1Xx8eTb-nFML-U"}sai@sai:/home/seqlap29/Sai/Projects/upstox/new$ curl -X 'GET' 
+curl: no URL specified!
+curl: try 'curl --help' or 'curl --manual' for more information
+sai@sai:/home/seqlap29/Sai/Projects/upstox/new$  'https://api-v2.upstox.com/user/profile' 
+bash: https://api-v2.upstox.com/user/profile: No such file or directory
+sai@sai:/home/seqlap29/Sai/Projects/upstox/new$  -H 'accept: application/json' 
+bash: -H: command not found
+sai@sai:/home/seqlap29/Sai/Projects/upstox/new$  -H 'Api-Version: 2.0' 
+bash: -H: command not found
+sai@sai:/home/seqlap29/Sai/Projects/upstox/new$  -H 'Authorization:  eyJ0eXAiOiJKV1QiLCJrZXlfaWQiOiJza192MS4wIiwiYWxnIjoiSFMyNTYifQ.eyJzdWIiOiJISjE1NzYiLCJqdGkiOiI2NDVjNTc3MDMxODRkMTI2MDRkMzU4NWULCJpc011bHRpQ2xpZW50IjpmYWxzZSwiaXNBY3RpdmUiOnRydWUsInNjb3BlIjpbImludGVyYWN0aXZlIiwiaGlzdG9yaWNhbCJdLCJpYXQiOjE2ODM1MzIxOTQsImlzcyI6InVkYXBpLWdhdGV3YXktc2VydmljZSIsImV4cCI6MTY4MzYyMDM5NH0.hZrloRLgPXgMzXCNkUMXzs7Fh52Kz1Xx8eTb-nFML-U'^C
+sai@sai:/home/seqlap29/Sai/Projects/upstox/new$ 
+sai@sai:/home/seqlap29/Sai/Projects/upstox/new$ 
+sai@sai:/home/seqlap29/Sai/Projects/upstox/new$ 
+sai@sai:/home/seqlap29/Sai/Projects/upstox/new$ curl -X 'GET' \
+>  'https://api-v2.upstox.com/user/profile' \ 
+{"status":"error","errors":[]}curl: (3) Host name ' ' contains bad letter
+sai@sai:/home/seqlap29/Sai/Projects/upstox/new$  -H 'accept: application/json' \
+>  -H 'Api-Version: 2.0' \
+>  -H 'Authorization:  eyJ0eXAiOiJKV1QiLCJrZXlfaWQiOiJza192MS4wIiwiYWxnIjoiSFMyNTYifQ.eyJzdWIiOiJISjE1NzYiLCJqdGkiOiI2NDVjNTc3MDMxODRkMTI2MDRkMzU4NWULCJpc011bHRpQ2xpZW50IjpmYWxzZSwiaXNBY3RpdmUiOnRydWUsInNjb3BlIjpbImludGVyYWN0aXZlIiwiaGlzdG9yaWNhbCJdLCJpYXQiOjE2ODM1MzIxOTQsImlzcyI6InVkYXBpLWdhdGV3YXktc2VydmljZSIsImV4cCI6MTY4MzYyMDM5NH0.hZrloRLgPXgMzXCNkUMXzs7Fh52Kz1Xx8eTb-nFML-U' ^C
+sai@sai:/home/seqlap29/Sai/Projects/upstox/new$ 
+sai@sai:/home/seqlap29/Sai/Projects/upstox/new$ 
+sai@sai:/home/seqlap29/Sai/Projects/upstox/new$ 
+sai@sai:/home/seqlap29/Sai/Projects/upstox/new$ 
+sai@sai:/home/seqlap29/Sai/Projects/upstox/new$ ^M
+bash: $'\r': command not found
+sai@sai:/home/seqlap29/Sai/Projects/upstox/new$ 
+sai@sai:/home/seqlap29/Sai/Projects/upstox/new$ curl -X 'GET' \
+>  'https://api-v2.upstox.com/user/profile'\ 
+{"status":"error","errors":[]}sai@sai:/home/seqlap29/Sai/Projects/upstox/new$  -H 'accept: application/json'\
+>  -H 'Api-Version: 2.0'\
+>  -H 'Authorization:  eyJ0eXAiOiJKV1QiLCJrZXlfaWQiOiJza192MS4wIiwiYWxnIjoiSFMyNTYifQ.eyJzdWIiOiJISjE1NzYiLCJqdGkiOiI2NDVjNTc3MDMxODRkMTI2MDRkMzU4NWULCJpc011bHRpQ2xpZW50IjpmYWxzZSwiaXNBY3RpdmUiOnRydWUsInNjb3BlIjpbImludGVyYWN0aXZlIiwiaGlzdG9yaWNhbCJdLCJpYXQiOjE2ODM1MzIxOTQsImlzcyI6InVkYXBpLWdhdGV3YXktc2VydmljZSIsImV4cCI6MTY4MzYyMDM5NH0.hZrloRLgPXgMzXCNkUMXzs7Fh52Kz1Xx8eTb-nFML-U' ^C
+sai@sai:/home/seqlap29/Sai/Projects/upstox/new$ 
+sai@sai:/home/seqlap29/Sai/Projects/upstox/new$ 
+sai@sai:/home/seqlap29/Sai/Projects/upstox/new$ 
+sai@sai:/home/seqlap29/Sai/Projects/upstox/new$ 
+sai@sai:/home/seqlap29/Sai/Projects/upstox/new$ 
+sai@sai:/home/seqlap29/Sai/Projects/upstox/new$ curl -X 'GET'  'https://api-v2.upstox.com/user/profile' -H 'accept: application/json' -H 'Api-Version: 2.0' -H 'Authorization:  eyJ0eXAiOiJKV1QiLCJrZXlfaWQiOiJza192MS4wIiwiYWxnIjoiSFMyNTYifQ.eyJzdWIiOiJISjE1NzYiLCJqdGkiOiI2NDVjNTc3MDMxODRkMTI2MDRkMzU4NWULCJpc011bHRpQ2xpZW50IjpmYWxzZSwiaXNBY3RpdmUiOnRydWUsInNjb3BlIjpbImludGVyYWN0aXZlIiwiaGlzdG9yaWNhbCJdLCJpYXQiOjE2ODM1MzIxOTQsImlzcyI6InVkYXBpLWdhdGV3YXktc2VydmljZSIsImV4cCI6MTY4MzYyMDM5NH0.hZrloRLgPXgMzXCNkUMXzs7Fh52Kz1Xx8eTb-nFML-U'
+{"status":"error","errors":[]}sai@sai:/home/seqlap29/Sai/Projects/upstox/new$ curl -X 'GET'  'https://api-v2.upstox.com/user/profile' -H 'accept: application/json' -H 'Api-Version: 2.0' -H 'Authorization:iJza192MS4wIiwiYWxnIjoiSFMyNTYifQ.eyJzdWIiOiJISjE1NzYiLCJqdGkiOiI2NDU4YTlhMmMwMjkzNDUyYmZlMDY5N2EiLCJpc011bHRpQ2xpZW50IjpmYWxzZSwiaXNBY3RpdmUiOnRydWUsInNjb3BlIjpbImludGVyYWN0aXZlIiwiaGlzdG9yaWNhbCJdLCJpYXQiOjE2ODM1MzIxOTQsImlzcyI6InVkYXBpLWdhdGV3YXktc2VydmljZSIsImV4cCI6MTY4MzYyMDM5NH0.hZrloRLgPXgMzXCNkUMXzs7Fh52Kz1Xx8eTb-nFML-U'
+{"status":"error","errors":[]}sai@sai:/home/seqlap29/Sai/Projects/upstox/new$ curl -X 'GET'  'https://api-v2.upstox.com/user/profile' -H 'accept: application/json' -H 'Api-Version: 2.0' -H 'Authorization:XlfaWQiOiJza192MS4wIiwiYWxnIjoiSFMyNTYifQ.eyJzdWIiOiJISjE1NzYiLCJqdGkiOiI2NDU4YTlhMmMwMjkzNDUyYmZlMDY5N2EiLCJpc011bHRpQ2xpZW50IjpmYWxzZSwiaXNBY3RpdmUiOnRydWUsInNjb3BlIjpbImludGVyYWN0aXZlIiwiaGlzdG9yaWNhbCJdLCJpYXQiOjE2ODM1MzIxOTQsImlzcyI6InVkYXBpLWdhdGV3YXktc2VydmljZSIsImV4cCI6MTY4MzYyMDM5NH0.hZrloRLgPXgMzXCNkUMXzs7Fh52Kz1Xx8eTb-nFML-U' 
+{"status":"success","data":{"email":"saivenki@hotmail.com","exchanges":["NSE","BSE","NFO","CDS"],"products":["OCO","D","CO","I"],"broker":"UPSTOX","user_id":"HJ1576","user_name":"SAIVENKATESH SUBRAMONIAM","order_types":["MARKET","LIMIT","SL","SL-M"],"user_type":"individual"}}sai@sai:/home/seqlap29/Sai/Projects/upstox/new$ 
+sai@sai:/home/seqlap29/Sai/Projects/upstox/new$ 
+sai@sai:/home/seqlap29/Sai/Projects/upstox/new$ 
+sai@sai:/home/seqlap29/Sai/Projects/upstox/new$ curl -X 'GET' \
+>   'https://api-v2.upstox.com/market-quote/ohlc?symbol=NSE_EQ%7CINE848E01039&interval=1d' \
+>   -H 'accept: application/json' \
+>   -H 'Api-Version: 2.0' \
+>   -H 'Authorization: Bearer   eyJ0eXAiOiJKV1QiLCJrZXlfaWQiOiJza192MS4wIiwiYWxnIjoiSFMyNTYifQ.eyJzdWIiOiJISjE1NzYiLCJqdGkiOiI2NDVjNTc3MDMxODRkMTI2MDRkMzU4NWULCJpc011bHRpQ2xpZW50IjpmYWxzZSwiaXNBY3RpdmUiOnRydWUsInNjb3BlIjpbImludGVyYWN0aXZlIiwiaGlzdG9yaWNhbCJdLCJpYXQiOjE2ODM1MzIxOTQsImlzcyI6InVkYXBpLWdhdGV3YXktc2VydmljZSIsImV4cCI6MTY4MzYyMDM5NH0.hZrloRLgPXgMzXCNkUMXzs7Fh52Kz1Xx8eTb-nFML-U'
+{"status":"error","errors":[{"errorCode":"UDAPI10001","message":"Something went wrong","propertyPath":null,"invalidValue":null}]}sai@sai:/home/seqlap29/Sai/Projects/upstox/new$ 
+sai@sai:/home/seqlap29/Sai/Projects/upstox/new$ 
+sai@sai:/home/seqlap29/Sai/Projects/upstox/new$ 
+sai@sai:/home/seqlap29/Sai/Projects/upstox/new$ 
+sai@sai:/home/seqlap29/Sai/Projects/upstox/new$ 
+sai@sai:/home/seqlap29/Sai/Projects/upstox/new$ 
+sai@sai:/home/seqlap29/Sai/Projects/upstox/new$ 
+sai@sai:/home/seqlap29/Sai/Projects/upstox/new$ curl -X 'GET' \
+>   'https://api-v2.upstox.com/market-quote/ohlc?symbol=NSE_EQ%7CINE009A01021&interval=1d' \
+>   -H 'accept: application/json' \
+>   -H 'Api-Version: 2.0' \
+>   -H 'Authorization: Bearer   eyJ0eXAiOiJKV1QiLCJrZXlfaWQiOiJza192MS4wIiwiYWxnIjoiSFMyNTYifQ.eyJzdWIiOiJISjE1NzYiLCJqdGkiOiI2NDVjNTc3MDMxODRkMTI2MDRkMzU4NWULCJpc011bHRpQ2xpZW50IjpmYWxzZSwiaXNBY3RpdmUiOnRydWUsInNjb3BlIjpbImludGVyYWN0aXZlIiwiaGlzdG9yaWNhbCJdLCJpYXQiOjE2ODM1MzIxOTQsImlzcyI6InVkYXBpLWdhdGV3YXktc2VydmljZSIsImV4cCI6MTY4MzYyMDM5NH0.hZrloRLgPXgMzXCNkUMXzs7Fh52Kz1Xx8eTb-nFML-U'
+{"status":"success","data":{"NSE_EQ:INFY":{"ohlc":{"open":1262.45,"high":1269.95,"low":1255.2,"close":1269.05},"last_price":1269.05,"instrument_token":"NSE_EQ|INE009A01021"}}}sai@sai:/home/seqlap29/Sai/Projects/upstox/new$ curl -X 'GET' \
+>   'https://api-v2.upstox.com/market-quote/ohlc?symbol=NSE_EQ%7CINE009A01021|NSE_EQ%7CINE075A01022&interval=1d' \
+>   -H 'accept: application/json' \
+>   -H 'Api-Version: 2.0' \
+>   -H 'Authorization: Bearer   eyJ0eXAiOiJKV1QiLCJrZXlfaWQiOiJza192MS4wIiwiYWxnIjoiSFMyNTYifQ.eyJzdWIiOiJISjE1NzYiLCJqdGkiOiI2NDVjNTc3MDMxODRkMTI2MDRkMzU4NWULCJpc011bHRpQ2xpZW50IjpmYWxzZSwiaXNBY3RpdmUiOnRydWUsInNjb3BlIjpbImludGVyYWN0aXZlIiwiaGlzdG9yaWNhbCJdLCJpYXQiOjE2ODM1MzIxOTQsImlzcyI6InVkYXBpLWdhdGV3YXktc2VydmljZSIsImV4cCI6MTY4MzYyMDM5NH0.hZrloRLgPXgMzXCNkUMXzs7Fh52Kz1Xx8eTb-nFML-U'
+{"status":"error","errors":[{"errorCode":"UDAPI1011","message":"symbol is of invalid format","propertyPath":"getOHLC.symbol","invalidValue":"NSE_EQ|INE009A01021|NSE_EQ|INE075A01022"}]}sai@sai:/home/seqlap29/Sai/Projects/upstox/new$ curl -X 'GET' \
+>   'https://api-v2.upstox.com/market-quote/ohlc?symbol=NSE_EQ%7CINE009A01021,NSE_EQ%7CINE075A01022&interval=1d' \
+>   -H 'accept: application/json' \
+>   -H 'Api-Version: 2.0' \
+>   -H 'Authorization: Bearer   eyJ0eXAiOiJKV1QiLCJrZXlfaWQiOiJza192MS4wIiwiYWxnIjoiSFMyNTYifQ.eyJzdWIiOiJISjE1NzYiLCJqdGkiOiI2NDVjNTc3MDMxODRkMTI2MDRkMzU4NWULCJpc011bHRpQ2xpZW50IjpmYWxzZSwiaXNBY3RpdmUiOnRydWUsInNjb3BlIjpbImludGVyYWN0aXZlIiwiaGlzdG9yaWNhbCJdLCJpYXQiOjE2ODM1MzIxOTQsImlzcyI6InVkYXBpLWdhdGV3YXktc2VydmljZSIsImV4cCI6MTY4MzYyMDM5NH0.hZrloRLgPXgMzXCNkUMXzs7Fh52Kz1Xx8eTb-nFML-U'
+{"status":"success","data":{"NSE_EQ:WIPRO":{"ohlc":{"open":381.0,"high":383.0,"low":379.6,"close":380.25},"last_price":380.25,"instrument_token":"NSE_EQ|INE075A01022"},"NSE_EQ:INFY":{"ohlc":{"open":1262.45,"high":1269.95,"low":1255.2,"close":1269.0},"last_price":1269.0,"instrument_token":"NSE_EQ|INE009A01021"}}}sai@sai:/home/seqlap29/Sai/Projects/upstox/new$ 
+sai@sai:/home/seqlap29/Sai/Projects/upstox/new$ 
+sai@sai:/home/seqlap29/Sai/Projects/upstox/new$ 
+sai@sai:/home/seqlap29/Sai/Projects/upstox/new$ curl -X 'GET' \
+>   'https://api-v2.upstox.com/market-quote/ohlc?symbol=NSE_EQ%7CINE009A01021,NSE_EQ%7CINE075A01022&interval=I1' \
+>   -H 'accept: application/json' \
+>   -H 'Api-Version: 2.0' \
+>   -H 'Authorization: Bearer   eyJ0eXAiOiJKV1QiLCJrZXlfaWQiOiJza192MS4wIiwiYWxnIjoiSFMyNTYifQ.eyJzdWIiOiJISjE1NzYiLCJqdGkiOiI2NDVjNTc3MDMxODRkMTI2MDRkMzU4NWULCJpc011bHRpQ2xpZW50IjpmYWxzZSwiaXNBY3RpdmUiOnRydWUsInNjb3BlIjpbImludGVyYWN0aXZlIiwiaGlzdG9yaWNhbCJdLCJpYXQiOjE2ODM1MzIxOTQsImlzcyI6InVkYXBpLWdhdGV3YXktc2VydmljZSIsImV4cCI6MTY4MzYyMDM5NH0.hZrloRLgPXgMzXCNkUMXzs7Fh52Kz1Xx8eTb-nFML-U'
+{"status":"success","data":{"NSE_EQ:WIPRO":{"ohlc":{"open":380.0,"high":380.1,"low":380.0,"close":380.0},"last_price":380.0,"instrument_token":"NSE_EQ|INE075A01022"},"NSE_EQ:INFY":{"ohlc":{"open":1268.95,"high":1269.3,"low":1268.95,"close":1269.1},"last_price":1269.3,"instrument_token":"NSE_EQ|INE009A01021"}}}sai@sai:/home/seqlap29/Sai/Projects/upstox/new$ 
+sai@sai:/home/seqlap29/Sai/Projects/upstox/new$ 
+sai@sai:/home/seqlap29/Sai/Projects/upstox/new$ curl -X 'GET'   'https://api-v2.upstox.com/market-quote/ohlc?symbol=NSE_EQ%7CINE009A01021,NSE_EQ%7CINE075A01022&interval=I1'   -H 'accept: application/json'   -H 'Api-Version: 2.0'   -H 'Authorization: Bearer   eyJ0eXAiOiJKV1QiLCJrZXlfaWQiOiJza192MS4wIiwiYWxnIjoiSFMyNTYifQ.eyJzdWIiOiJISjE1NzYiLCJqdGkiOiI2NDVjNTc3MDMxODRkMTI2MDRkMzU4NWULCJpc011bHRpQ2xpZW50IjpmYWxzZSwiaXNBY3RpdmUiOnRydWUsInNjb3BlIjpbImludGVyYWN0aXZlIiwiaGlzdG9yaWNhbCJdLCJpYXQiOjE2ODM1MzIxOTQsImlzcyI6InVkYXBpLWdhdGV3YXktc2VydmljZSIsImV4cCI6MTY4MzYyMDM5NH0.hZrloRLgPXgMzXCNkUMXzs7Fh52Kz1Xx8eTb-nFML-U'
+{"status":"success","data":{"NSE_EQ:WIPRO":{"ohlc":{"open":380.2,"high":380.2,"low":380.0,"close":380.15},"last_price":380.2,"instrument_token":"NSE_EQ|INE075A01022"},"NSE_EQ:INFY":{"ohlc":{"open":1269.35,"high":1269.7,"low":1269.35,"close":1269.7},"last_price":1269.7,"instrument_token":"NSE_EQ|INE009A01021"}}}sai@sai:/home/seqlap29/Sai/Projects/upstox/new$ 
+sai@sai:/home/seqlap29/Sai/Projects/upstox/new$ curl -X 'GET'   'https://api-v2.upstox.com/market-quote/ohlc?symbol=NSE_EQ%7CINE009A01021,NSE_EQ%7CINE075A01022&interval=I1'   -H 'accept: application/json'   -H 'Api-Version: 2.0'   -H 'Authorization: Bearer   eyJ0eXAiOiJKV1QiLCJrZXlfaWQiOiJza192MS4wIiwiYWxnIjoiSFMyNTYifQ.eyJzdWIiOiJISjE1NzYiLCJqdGkiOiI2NDVjNTc3MDMxODRkMTI2MDRkMzU4NWULCJpc011bHRpQ2xpZW50IjpmYWxzZSwiaXNBY3RpdmUiOnRydWUsInNjb3BlIjpbImludGVyYWN0aXZlIiwiaGlzdG9yaWNhbCJdLCJpYXQiOjE2ODM1MzIxOTQsImlzcyI6InVkYXBpLWdhdGV3YXktc2VydmljZSIsImV4cCI6MTY4MzYyMDM5NH0.hZrloRLgPXgMzXCNkUMXzs7Fh52Kz1Xx8eTb-nFML-U'^C
+sai@sai:/home/seqlap29/Sai/Projects/upstox/new$ curl -X 'GET' \
+>   'https://api-v2.upstox.com/market-quote/ohlc?symbol=NSE_EQ%7CINE009A01021,NSE_EQ%7CINE075A01022&interval=I15' \
+>   -H 'accept: application/json' \
+>   -H 'Api-Version: 2.0' \
+>   -H 'Authorization: Bearer   eyJ0eXAiOiJKV1QiLCJrZXlfaWQiOiJza192MS4wIiwiYWxnIjoiSFMyNTYifQ.eyJzdWIiOiJISjE1NzYiLCJqdGkiOiI2NDVjNTc3MDMxODRkMTI2MDRkMzU4NWULCJpc011bHRpQ2xpZW50IjpmYWxzZSwiaXNBY3RpdmUiOnRydWUsInNjb3BlIjpbImludGVyYWN0aXZlIiwiaGlzdG9yaWNhbCJdLCJpYXQiOjE2ODM1MzIxOTQsImlzcyI6InVkYXBpLWdhdGV3YXktc2VydmljZSIsImV4cCI6MTY4MzYyMDM5NH0.hZrloRLgPXgMzXCNkUMXzs7Fh52Kz1Xx8eTb-nFML-U'
+{"status":"error","errors":[{"errorCode":"UDAPI1028","message":"Invalid interval","propertyPath":"getOHLC.interval","invalidValue":"I15"}]}sai@sai:/home/seqlap29/Sai/Projects/upstox/new$ 
+sai@sai:/home/seqlap29/Sai/Projects/upstox/new$ 
+sai@sai:/home/seqlap29/Sai/Projects/upstox/new$ 
+sai@sai:/home/seqlap29/Sai/Projects/upstox/new$ 
+sai@sai:/home/seqlap29/Sai/Projects/upstox/new$ ^M
+bash: $'\r': command not found
+sai@sai:/home/seqlap29/Sai/Projects/upstox/new$ curl -X 'GET' \
+>    'https://api-v2.upstox.com/market-quote/quotes?symbol=NSE_EQ%7CINE009A01021,NSE_EQ%7CINE075A01022' \
+>  -H 'accept: application/json' \
+>  -H 'Api-Version: 2.0' \
+>  -H 'Authorization: Bearer  eyJ0eXAiOiJKV1QiLCJrZXlfaWQiOiJza192MS4wIiwiYWxnIjoiSFMyNTYifQ.eyJzdWIiOiJISjE1NzYiLCJqdGkiOiI2NDVjNTc3MDMxODRkMTI2MDRkMzU4NWULCJpc011bHRpQ2xpZW50IjpmYWxzZSwiaXNBY3RpdmUiOnRydWUsInNjb3BlIjpbImludGVyYWN0aXZlIiwiaGlzdG9yaWNhbCJdLCJpYXQiOjE2ODM1MzIxOTQsImlzcyI6InVkYXBpLWdhdGV3YXktc2VydmljZSIsImV4cCI6MTY4MzYyMDM5NH0.hZrloRLgPXgMzXCNkUMXzs7Fh52Kz1Xx8eTb-nFML-U'
+{"status":"success","data":{"NSE_EQ:WIPRO":{"ohlc":{"open":381.0,"high":383.0,"low":379.6,"close":380.0},"depth":{"buy":[{"quantity":1550,"price":379.95,"orders":2},{"quantity":442,"price":379.9,"orders":6},{"quantity":654,"price":379.85,"orders":9},{"quantity":3790,"price":379.8,"orders":23},{"quantity":4435,"price":379.75,"orders":18}],"sell":[{"quantity":1554,"price":380.0,"orders":2},{"quantity":362,"price":380.1,"orders":2},{"quantity":1927,"price":380.15,"orders":13},{"quantity":3753,"price":380.2,"orders":20},{"quantity":1303,"price":380.25,"orders":13}]},"timestamp":"2023-05-08T14:42:08.553+05:30","instrument_token":"NSE_EQ|INE075A01022","symbol":"WIPRO","last_price":380.0,"volume":4038708,"average_price":380.49,"oi":0.0,"net_change":0.6000000000000227,"total_buy_quantity":0.0,"total_sell_quantity":0.0,"lower_circuit_limit":341.5,"upper_circuit_limit":417.3,"last_trade_time":"1683537125000","oi_day_high":0.0,"oi_day_low":0.0},"NSE_EQ:INFY":{"ohlc":{"open":1262.45,"high":1270.3,"low":1255.2,"close":1265.15},"depth":{"buy":[{"quantity":3,"price":1265.05,"orders":2},{"quantity":594,"price":1265.0,"orders":13},{"quantity":560,"price":1264.95,"orders":8},{"quantity":326,"price":1264.9,"orders":4},{"quantity":448,"price":1264.85,"orders":6}],"sell":[{"quantity":70,"price":1265.15,"orders":1},{"quantity":35,"price":1265.55,"orders":1},{"quantity":1,"price":1265.6,"orders":1},{"quantity":303,"price":1265.65,"orders":4},{"quantity":333,"price":1265.7,"orders":5}]},"timestamp":"2023-05-08T14:42:08.553+05:30","instrument_token":"NSE_EQ|INE009A01021","symbol":"INFY","last_price":1265.1500244140625,"volume":3741706,"average_price":1264.28,"oi":0.0,"net_change":6.050000000000182,"total_buy_quantity":0.0,"total_sell_quantity":0.0,"lower_circuit_limit":1133.2,"upper_circuit_limit":1385.0,"last_trade_time":"1683537127000","oi_day_high":0.0,"oi_day_low":0.0}}}sai@sai:/home/seqlap29/Sai/Projects/upstox/new$ curl -X 'GET'    'https://api-v2.upstox.com/market-quote/quotes?symbol=NSE_EQ%7CINE009A01021,NSE_EQ%7CINE075A0Version: 2.0'  -H 'Authorization: Bearer  eyJ0eXAiOiJKV1QiLCJrZXlfaWQiOiJza192MS4wIiwiYWxnIjoiSFMyNTYifQ.eyJzdWIiOiJISjE1NzYiLCJqdGkiOiI2NDVjNTc3MDMxODRkMTI2MDRkMzU4NWULCJpc011bHRpQ2xpZW50IjpmYWxzZSwiaXNBY3RpdmUiOnRydWUsInNjb3BlIjpbImludGVyYWN0aXZlIiwiaGlzdG9yaWNhbCJdLCJpYXQiOjE2ODM1MzIxOTQsImlzcyI6InVkYXBpLWdhdGV3YXktc2VydmljZSIsImV4cCI6MTY4MzYyMDM5NH0.hZrloRLgPXgMzXCNkUMXzs7Fh52Kz1Xx8eTb-nFML-U'
+{"status":"success","data":{"NSE_EQ:WIPRO":{"ohlc":{"open":381.0,"high":383.0,"low":379.6,"close":380.85},"depth":{"buy":[{"quantity":448,"price":380.75,"orders":1},{"quantity":3,"price":380.7,"orders":1},{"quantity":2594,"price":380.4,"orders":6},{"quantity":196,"price":380.25,"orders":2},{"quantity":30,"price":380.2,"orders":3}],"sell":[{"quantity":128,"price":380.85,"orders":1},{"quantity":5202,"price":380.9,"orders":5},{"quantity":436,"price":380.95,"orders":3},{"quantity":8408,"price":381.0,"orders":39},{"quantity":20,"price":381.05,"orders":1}]},"timestamp":"2023-05-08T15:30:38.889+05:30","instrument_token":"NSE_EQ|INE075A01022","symbol":"WIPRO","last_price":380.8500061035156,"volume":4802533,"average_price":380.46,"oi":0.0,"net_change":1.4500000000000455,"total_buy_quantity":0.0,"total_sell_quantity":0.0,"lower_circuit_limit":341.5,"upper_circuit_limit":417.3,"last_trade_time":"1683539999000","oi_day_high":0.0,"oi_day_low":0.0},"NSE_EQ:INFY":{"ohlc":{"open":1262.45,"high":1270.3,"low":1255.2,"close":1266.5},"depth":{"buy":[{"quantity":11,"price":1266.0,"orders":2},{"quantity":1,"price":1265.65,"orders":1},{"quantity":1,"price":1265.6,"orders":1},{"quantity":1,"price":1265.55,"orders":1},{"quantity":304,"price":1265.5,"orders":3}],"sell":[{"quantity":58,"price":1266.5,"orders":1},{"quantity":316,"price":1266.6,"orders":1},{"quantity":1,"price":1266.9,"orders":1},{"quantity":20,"price":1266.95,"orders":2},{"quantity":4135,"price":1267.0,"orders":43}]},"timestamp":"2023-05-08T15:30:38.889+05:30","instrument_token":"NSE_EQ|INE009A01021","symbol":"INFY","last_price":1266.5,"volume":5259817,"average_price":1264.61,"oi":0.0,"net_change":7.400000000000091,"total_buy_quantity":0.0,"total_sell_quantity":0.0,"lower_circuit_limit":1133.2,"upper_circuit_limit":1385.0,"last_trade_time":"1683539999000","oi_day_high":0.0,"oi_day_low":0.0}}}

@@ -1,0 +1,14 @@
+[
+
+{"ISIN" : "NSE_EQ%7CINE040A01034","Symbol":"HDFCBANK","Sector":"Bank"},
+{"ISIN" : "NSE_EQ%7CINE090A01021","Symbol":"ICICIBANK","Sector":"Bank"},
+
+{"ISIN" : "NSE_EQ%7CINE009A01021","Symbol":"INFY","Sector":"IT"},
+{"ISIN" : "NSE_EQ%7CINE749A01030","Symbol":"JINDALSTEL","Sector":"Metals"},
+{"ISIN" : "NSE_EQ%7CINE237A01028","Symbol":"KOTAKBANK","Sector":"Bank"},
+{"ISIN" : "NSE_EQ%7CINE101A01026","Symbol":"M&M","Sector":"Auto"},
+{"ISIN" : "NSE_EQ%7CINE585B01010","Symbol":"MARUTI","Sector":"Auto"},
+{"ISIN" : "NSE_EQ%7CINE663F01024","Symbol":"NAUKRI","Sector":"IT"},
+{"ISIN" : "NSE_EQ%7CINE010B01027","Symbol":"ZYDUSLIFE","Sector":"Pharma"}
+
+]
