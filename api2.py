@@ -1,181 +1,29 @@
 
 from upstox_api.api import *
-from datetime import datetime, timedelta
+from datetime import timedelta
 from pprint import pprint
-import os, sys
+import sys
 from tempfile import gettempdir
 import requests
 import json
 import os
-from fetch_historic_data import HistoricDataManager
-from utils import Utility
-from config import Configuration
-from db_cache import get_db
-from trend_analyzer import TrendAnalyzer
+import pandas as pd
+
+from service.range_calculator import RangeCalculator
+from service.fetch_historic_data import HistoricDataManager
+from service.fetch_intraday_data import IntradayDataManager
+from utility.utils import Utility
+from utility.config import Configuration
+from database.db_cache import get_db
+from service.instrument import Instrument
+from service.reports_service import Reports
+from service.support_resistance import SupportResistance
+from service.trend_analyzer import TrendAnalyzer
 
 
 class App:
-    try: input = raw_input
-    except NameError: pass
-
-    u = None
-    s = None
-
-    break_symbol = '@'
-
-    profile = None
-    #rootFolder = "/home/seqlap29/Sai/Projects/upstox/new/"
-    #rootFolder = "C:/Users/saive/Sai/StockMarket/APICoding/"
-    #dataFolder = rootFolder+"data/"
-    #reportFolder = dataFolder+"Reports/"
-    #token = "Bearer eyJ0eXAiOiJKV1QiLCJrZXlfaWQiOiJza192MS4wIiwiYWxnIjoiSFMyNTYifQ.eyJzdWIiOiJISjE1NzYiLCJqdGkiOiI2NTc1NTFlYjVkYzZlNTZlZGQ4MmM2ZjIiLCJpc011bHRpQ2xpZW50IjpmYWxzZSwiaXNBY3RpdmUiOnRydWUsInNjb3BlIjpbImludGVyYWN0aXZlIiwiaGlzdG9yaWNhbCJdLCJpYXQiOjE3MDIxODc0OTksImlzcyI6InVkYXBpLWdhdGV3YXktc2VydmljZSIsImV4cCI6MTcwMjI0NTYwMH0.mZ7_kHT8uv-9b1VoMC6v6m9Z8bz3SfYQQ5DKVB6MomQ" 
-
-    #headers = {"accept": "application/json", "Api-Version": "2.0", "Authorization": token }
-
-    #allHistoricCandles ={}
-    '''
-    def readFromFile1(fileName,noOfRecords):
-        try:
-            with open(fileName, "r") as f:
-                my_dict = json.load(f)
-                retValue = {}
-                for symbol in my_dict:
-                    listOfValues = (my_dict[symbol])[0:noOfRecords]
-                    my_dict[symbol] = listOfValues
-                    print("Inside readFromFile with noOfRecords = ",len(listOfValues))
-
-                return my_dict
-        except FileNotFoundError:
-            print("File - "+fileName+" not found")
-
-    #Reading from a file
-    def readFromFile(fileName):
-        try:
-            with open(fileName, "r") as f:
-                my_dict = json.load(f)
-                return my_dict
-        except FileNotFoundError:
-            print("File - "+fileName+" not found")
-        
-
-    #Writing to a File
-    def writeToFile(fileName, data):
-        with open(fileName, "w") as f:
-            json.dump(data, f)
-
-    def writeToCSVFile(fileName, data):
-        with open(fileName, "w", newline='') as file:
-            writer = csv.writer(file)
-            writer.writerows(data)
-
-    def writeToExcel(fileName, sheetName, data):
-        # Check if file exists
-        if os.path.exists(fileName):
-            # If exists, load the workbook
-            wb = load_workbook(fileName)
-            print(f"Opened existing file: {fileName}")
-
-        else:
-            # If not exists, create a new workbook
-            wb = Workbook()
-            print(f"Created new file: {fileName}")
-        
-        # Get list of all sheet names
-        sheets = wb.sheetnames
-
-        # Check if a sheet exists
-
-        if sheetName in sheets:
-            sheet = wb[sheetName]
-        else:
-            sheet = wb.create_sheet(title=sheetName)    
-        # Write data starting at row 1
-        for row_idx, row_data in enumerate(data, start=1):
-            for col_idx, value in enumerate(row_data, start=1):
-                sheet.cell(row=row_idx, column=col_idx, value=value)
-        wb.save(fileName)
-
-    def getHistoricDataFromUpstoxForOneSymbol(symbol, headers,reqParams,timeframe,toDate,fromDate):
-        url = "https://api-v2.upstox.com/historical-candle/"
-        url = url +symbol+"/"+timeframe+"/"+toDate+"/"+fromDate
-        responseJson = sentGetRequest(url,headers,reqParams)
-
-        dataJson = json.loads(responseJson)
-        if ( dataJson["status"] == 'error'):
-            print(dataJson)
-            if (dataJson["errors"][0]['errorCode'] == 'UDAPI10005'):
-                time.sleep(15)
-                return getHistoricDataFromUpstoxForOneSymbol(symbol,headers,reqParams,timeframe,toDate,fromDate,noOfCandles)
-        else:
-            candles = dataJson["data"]["candles"]
-            return candles
-
-    def getHistoricDataFromUpstox(headers,reqParams,timeframe,toDate,fromDate,forceUpdate,noOfCandles):
-        # Force Reading from Upstox
-
-        if (forceUpdate == "1"):
-            instruments = readFromFile(rootFolder+"data/symbolInfo.txt")
-            historicCandles = {}
-        
-
-            for record in instruments:
-                ISIN = record["ISIN"]      
-                print(ISIN+"_"+record["Symbol"])
-            
-                candles = getHistoricDataFromUpstoxForOneSymbol(ISIN, headers,reqParams,timeframe,toDate,fromDate)
-                if (candles != None):
-                    historicCandles[ISIN] = candles
-            writeToFile(dataFolder+"HistoricData_"+timeframe+".txt",historicCandles)
-            allHistoricCandles["HistoricData_"+timeframe] = historicCandles
-            return historicCandles
-        # If we have it in the cache, then take it from there
-        # Else if we have it in File, then take it from there
-        # Else go to the Upstox
-        else:
-            try:
-                historicCandles = allHistoricCandles["HistoricData_"+timeframe]
-                if (allHistoricCandles != None):
-                    return historicCandles
-            except:
-
-                historicCandles = readFromFile1(dataFolder+"HistoricData_"+timeframe+".txt",noOfCandles)
-                if (historicCandles != None):
-                    allHistoricCandles["HistoricData_"+timeframe] = historicCandles
-                    return historicCandles
-                else:
-                    return getHistoricDataFromUpstox(headers,reqParams,timeframe,toDate,fromDate,1,noOfCandles)
 
 
-
-    #Historical data - Check if it is locally available. If not get from upstox
-    def getHistoricData(headers,reqParams,symbol,timeframe,toDate,fromDate,forceUpdate,noOfCandles):
-        historicCandles = getHistoricDataFromUpstox(headers,reqParams,timeframe,toDate,fromDate,forceUpdate,noOfCandles)
-        if symbol in historicCandles:
-            return historicCandles[symbol]
-        else:
-            return None
-        
-
-
-    # Intraday Candle OHLC
-    def getIntradayOHLC(headers,reqParams,symbol,timeframe):
-        url = "https://api.upstox.com/v3/historical-candle/intraday/"
-
-        timeframe = "minutes/5"
-
-        url = url+symbol+"/"+timeframe
-        responseJson = sentGetRequest(url,headers,reqParams)
-        
-        dictionary = json.loads(responseJson)
-
-        print(dictionary)
-
-        if (dictionary['status'] == 'error'):
-            print(dictionary)
-        else:
-            candles = dictionary["data"]["candles"]
-            return candles
-    '''
     # Return positive Value (How much of breakout) if the first candle high is broken by the second candle close
     # Return negative Value (How much of breakdown) if the first candle low is broken by the second candle close 
     # Return 0 Otherwise 
@@ -305,7 +153,7 @@ class App:
         forceUpdate = 0
         cutoff = 25
         noOfDays = 200
-        timeframe = "day"
+        timeframe = "days/1"
         noOfCandles = 75
 
         if (len(sys.argv) > 1):
@@ -329,51 +177,37 @@ class App:
             
         return forceUpdate, cutoff, noOfDays, timeframe, noOfCandles
     
-    def test(self):
+    def getIntradayOHLCDataFromUpstox(self):
         reqParams = {}
         
         forceUpdate, cutoff, noOfDays, timeframe, noOfCandles = self.initializeParams()
 
         instruments = Utility.readFromFile(Configuration.dataFolder + Configuration.symbolsFileName)
         intradayCandles = {}
-        histDM = HistoricDataManager()
+        intradayDM = IntradayDataManager()
         for record in instruments:
             ISIN = record["ISIN"]
             symbol = record["Symbol"]
             print(ISIN + "_" +symbol)
-            histDM.getIntradayOHLC(Configuration.headers,reqParams,ISIN,symbol)
+            intradayDM.get_intraday_OHLC_from_upstox_for_one_stock(reqParams, ISIN, symbol)
 
-    def analyzeTrend(self, table: str, symbol: str,start_date:str,end_date:str):
-        db = get_db()
-        stock_data = db.fetch_stock_data(table,symbol, start_date, end_date)
-        print(stock_data)
-        close_price = [item[5] for item in stock_data]
+    def get_intraday_OHLC_from_upstox(self, symbol: str = None, sector: str = None):
+        intraDM = IntradayDataManager()
+        intraDM.get_intraday_OHLC_from_upstox_for_sector(symbol, sector)
 
-        close_slopes_10 = TrendAnalyzer.rolling_slope_trend(close_price,10)
-        print(close_slopes_10)
+    def get_historic_OHLC_from_upstox_for_sector(self, symbol: str = None, sector: str = None, candle_count:int = 100):
+        histDM = HistoricDataManager()
+        histDM.get_historic_OHLC_from_upstox_for_sector(symbol, sector, candle_count)
 
-        TrendAnalyzer.plot_best_fit_line(close_price[:10], "close_price_10")
-        TrendAnalyzer.plot_best_fit_line(close_slopes_10[:30], "close_slopes_10")
+    def get_historic_OHLC_from_upstox_for_one_stock_one_timeframe(self, symbol:str = 'INFY', timeframe:str = "minutes/15", candle_count:int = 200):
+        histDM = HistoricDataManager()
+        histDM.get_historic_OHLC_from_upstox_for_one_stock_one_timeframe(symbol,timeframe,candle_count)
 
-        open_price = [item[2] for item in stock_data]
-        open_slopes_10 = TrendAnalyzer.rolling_slope_trend(open_price, 10)
-        print("\n open_slopes_10\n")
-        print(open_slopes_10)
-        close_slopes_20 = TrendAnalyzer.rolling_slope_trend(close_price,20)
-        print("\n close_slopes_20\n")
-        print(close_slopes_20)
-        close_slopes_50 = TrendAnalyzer.rolling_slope_trend(close_price, 50)
-        print("\n close_slopes_50\n")
-        print(close_slopes_50)
-        close_slopes_200 = TrendAnalyzer.rolling_slope_trend(close_price, 200)
-        print("\n close_slopes_200\n")
-        print(close_slopes_200)
-
-    def myMain(self):
+    def myMain(self, sector: str = None):
         #findBreakOutOrDownForAllInstruments()
         
 
-        reqParams = {}
+
         forceUpdate, cutoff, noOfDays, timeframe, noOfCandles = self.initializeParams()
 
         toDate = date.today()
@@ -381,20 +215,21 @@ class App:
         fromDate = toDate - timedelta(days = int(noOfDays))
 
         # Read the instruments from the file
-        instruments = Utility.readFromFile(Configuration.dataFolder + Configuration.symbolsFileName)
+        # instruments = Utility.readFromFile(Configuration.dataFolder + Configuration.symbolsFileName)
+        instruments = get_db().fetch_isin_symbol_from_db(sector)
         priority1List = []
         lowPriceList = []
         highPriceList = []
         for record in instruments:
-            print("Processing for instrument "+record["Symbol"])
-            ISIN = record["ISIN"]
+            print("Processing for instrument "+record[1])
+            ISIN = record[0]
 
             histDM = HistoricDataManager()
-            candles = histDM.getHistoricData(Configuration.headers,reqParams,ISIN,timeframe,str(toDate),str(fromDate),forceUpdate,noOfCandles)
+            candles = histDM.getHistoricData(Configuration.headers,ISIN,timeframe,str(toDate),str(fromDate),forceUpdate,noOfCandles)
 
             if candles is None:
                 # Skip the Symbol processing
-                print("Skipping the processing of Symbol ", record["Symbol"])
+                print("Skipping the processing of Symbol ", record[1])
             else:
                 # symbol = record["Symbol"]
                 # tableName = Utility.getTableForTimeFrame(timeframe)
@@ -403,10 +238,10 @@ class App:
                 print("Candle Count == ", totalCandlesCount, "From Date = ", fromDate, "To Date == ", toDate)
                 
                 # If sector key is present in the symbolInfo for this record, then write to the sector file
-                if "Sector" in record:
+                if record[2] is not None:
                     # Write to the sector file sheet name should be the Symbol
                     header = ["Date","Open","High","Low","Close","Volume","OI"]
-                    Utility.writeToExcel(Configuration.reportFolder+record["Sector"]+"_"+timeframe+".xlsx", record["Symbol"],[header]+candles)
+                    #Utility.writeToExcel(Configuration.reportFolder+record["Sector"]+"_"+timeframe+".xlsx", record["Symbol"],[header]+candles)
 
                 closedRunningDiff = []
                 for index in range(totalCandlesCount):
@@ -422,23 +257,23 @@ class App:
                 currentCandleCloseVal = candles[0][4]
                 currentCandleDiffWithMin = diffWithMinVal[0]
                 currentCandleDiffWithMax = diffWithMaxVal[0]
-                print("Symbol ==", record["Symbol"], " DiffWithMin == ", currentCandleDiffWithMin, " DiffWithMax = ", currentCandleDiffWithMax)
+                print("Symbol ==", record[1], " DiffWithMin == ", currentCandleDiffWithMin, " DiffWithMax = ", currentCandleDiffWithMax)
                 
                 currentCandleDiffWithMinRatio = round((currentCandleDiffWithMin/currentCandleCloseVal)*100, 2)
                 currentCandleDiffWithMaxRatio = round((currentCandleDiffWithMax/currentCandleCloseVal)*100,2)
 
                 if currentCandleDiffWithMinRatio > cutoff:
-                    tup =(record["Symbol"],str(currentCandleDiffWithMinRatio),str(currentCandleDiffWithMaxRatio),candles[0][5])
+                    tup =(record[1],str(currentCandleDiffWithMinRatio),str(currentCandleDiffWithMaxRatio),candles[0][5])
                     priority1List.append(tup)
                     highPriceList.append(tup)
                 if currentCandleDiffWithMaxRatio > cutoff:
-                    tup =(record["Symbol"],str(currentCandleDiffWithMinRatio),str(currentCandleDiffWithMaxRatio),candles[0][5])
+                    tup =(record[1],str(currentCandleDiffWithMinRatio),str(currentCandleDiffWithMaxRatio),candles[0][5])
                     priority1List.append(tup)
                     lowPriceList.append(tup)
 
         print("High Priced Stocks")
-        Utility.writeToExcel(Configuration.reportFolder+"recommendations"+"_"+timeframe+".xlsx", "HighPrice",highPriceList)
-        Utility.writeToExcel(Configuration.reportFolder+"recommendations"+"_"+timeframe+".xlsx", "LowPrice",lowPriceList)
+        #Utility.writeToExcel(Configuration.reportFolder+"recommendations"+"_"+timeframe+".xlsx", "HighPrice",highPriceList)
+        #Utility.writeToExcel(Configuration.reportFolder+"recommendations"+"_"+timeframe+".xlsx", "LowPrice",lowPriceList)
         
         for s in highPriceList :
             print(s,sep="\n\n")
@@ -538,54 +373,106 @@ class App:
 
         return response.text
     '''
-    def show_home_screen():
-        global s, u
-        global profile
+    def show_home_screen(self):
+        # global s, u
+        # global profile
 
         print('\n*** Welcome to Upstox API ***\n\n')
-        print('1. Get Profile\n')
-        print('2. Get Balance\n')
-        print('3. Get Positions\n')
-        print('4. Get Holdings\n')
-        print('5. Get Order History\n')
-        print('6. Get LTP Quote\n')
-        print('7. Get Full Quote\n')
-        print('8. Show socket example\n')
-        print('9. Quit\n')
+        print('1. Get Historic Price for all Symbols for all Timeframe\n')
+        print('2. Get Intraday Price for all Symbols for intraday Timeframe  \n')
+        print('3. Find 1 day Territories for all stocks and Load in DB\n')
+        print('4. Find 75m Territories for all stocks and Load in DB\n')
+        print('5. Find 15m Territories for all stocks and Load in DB\n')
+        print('6. Find 5m Territories for all stocks and Load in DB\n')
+        print('7. Find 5m Territories for one stock and Load in DB\n')
+        print('8. Find 15m Territories for one stock and Load in DB\n')
+        print('9. Get Historic Price for one Symbols for 5m Timeframe\n')
+        print('10. Get Historic Price for all Symbols for one TimeFrame\n')
+
         selection = input('Select your option: \n')
         
         try:
             int(selection)
         except:
-            clear_screen()
-            show_home_screen()
+            self.clear_screen()
+            self.show_home_screen()
 
         selection = int(selection)
-        clear_screen()
+        self.clear_screen()
         if selection == 1:
-            load_profile()
-            pprint(profile)
+            self.get_historic_OHLC_from_upstox_for_sector()
+            # pprint(profile)
         elif selection == 2:
-            pprint(u.get_balance())
+            self.get_intraday_OHLC_from_upstox()
         elif selection == 3:
-            pprint(u.get_positions())
+            self.find_territories_for_all_sectors()
         elif selection == 4:
-            pprint(u.get_holdings())
+            self.find_territories_for_all_sectors('minutes/75')
         elif selection == 5:
-            pprint(u.get_order_history())
+            self.find_territories_for_all_sectors('minutes/15')
         elif selection == 6:
-            product = select_product()
-            if product is not None:
-                pprint(u.get_live_feed(product, LiveFeedType.LTP))
+            self.find_territories_for_all_sectors('minutes/5')
+        #     if product is not None:
+        #         pprint(u.get_live_feed(product, LiveFeedType.LTP))
         elif selection == 7:
-            product = select_product()
-            if product is not None:
-                pprint(u.get_live_feed(product, LiveFeedType.Full))
+            stock = input('Enter the Stock : \n')
+            self.find_territories(stock, 'minutes/5')
         elif selection == 8:
-            socket_example()
+            stock = input('Enter the Stock : \n')
+            self.find_territories(stock, 'minutes/15')
+        #     product = select_product()
+        #     if product is not None:
+        #         pprint(u.get_live_feed(product, LiveFeedType.Full))
+        # elif selection == 8:
+        #     socket_example()
         elif selection == 9:
-            sys.exit(0)
-        show_home_screen();
+            stock = input('Enter the Stock : \n')
+            self.get_historic_OHLC_from_upstox_for_one_stock_one_timeframe(stock)
+        elif selection == 10:
+            candle_count = 200
+            print("Type 1 for day")
+            print("Type 2 for week")
+            print("Type 3 for month")
+            print("Type 4 for 75m")
+            print("Type 5 for 15m")
+            print("Type 6 for 5m")
+            print("Type 7 for 1m")
+            timeframe = 'days/1'
+
+            choice = input('Enter the choice \n')
+
+            try:
+                int(choice)
+                print("Choice == "+str(choice))
+                choice = int(choice)
+            except:
+                self.clear_screen()
+                self.show_home_screen()
+            if choice == 1:
+                timeframe = 'days/1'
+                candle_count = 700
+            elif choice == 2:
+                timeframe = 'weeks/1'
+                candle_count = 500
+            elif choice == 3:
+                timeframe = 'months/1'
+                candle_count = 800
+
+            elif choice == 4:
+                timeframe = 'minutes/75'
+                candle_count = 500
+            elif choice == 5:
+                timeframe = 'minutes/15'
+                candle_count = 400
+            elif choice == 6:
+                timeframe = 'minutes/5'
+            elif choice == 7:
+                timeframe = 'minutes/1'
+            else:
+                timeframe = 'days/1'
+            print("Inside home screen "+timeframe)
+            HistoricDataManager().get_historic_OHLC_from_upstox_for_all_sector_one_timeframe(timeframe, candle_count)
+        self.show_home_screen();
 
 
     def load_profile():
@@ -708,7 +595,7 @@ class App:
     def event_handler_quote_update(message):
         pprint("Quote Update: %s" % str(message))
 
-    def clear_screen():
+    def clear_screen(self):
         os.system('cls' if os.name == 'nt' else 'clear')
 
     def write_key_to_settings(key, value):
@@ -743,13 +630,246 @@ class App:
             pass
         return None
 
+    def load_stocks_isin_symbol(self):
+        instrument.load_stocks_isin_symbol()
+
+    def get_close_price(self,symbol: str, table: str, stare_date: str, end_date: str = None):
+        histDM = HistoricDataManager()
+        close_price = histDM.getClosePrice(symbol,table, stare_date, end_date)
+
+    def fetch_n_candles_close_prices_from_db(self, symbol: str, table: str, candle_count:int = 200):
+        histDM = HistoricDataManager()
+        close_price, dates  = histDM.fetch_n_candles_close_prices_from_db(symbol, table, candle_count)
+        return close_price, dates
+
+    def check_for_consolidation(self, candles_with_atr_ratio):
+        # How many candles have range_atr_ration less than 1
+        counter = 0
+        for range_atr in candles_with_atr_ratio['range_atr_ratio']:
+            if range_atr < 1:
+                counter += 1
+            else:
+                break
+        # print("No of consolidation candles == "+ str(counter))
+
+        return counter
+
+    def find_atr_for_all_sectors(self,timeframe:str = "days/1", no_of_candles:int = 50):
+        # Get all sectors
+        all_sectors = Instrument().fetch_all_sectors()
+
+        atr_df = pd.DataFrame()
+        consolidation_candle_count = pd.DataFrame(columns = ["Stock", "Consolidation Candle Count"])
+        # Call find_atr_for_sector iterating through each sector
+        for sector in all_sectors["Sector"]:
+            atrs, consolidation_count = self.find_atr_for_sector(sector,timeframe, no_of_candles)
+            consolidation_candle_count = pd.concat([consolidation_candle_count, consolidation_count], ignore_index=True)
+            # Concatenate each returned df
+            atr_df = pd.concat([atr_df, atrs], ignore_index=True)
+
+        Utility.delete_file(Configuration.reportFolder+Configuration.report_file_name)
+
+        Utility.write_dataframe_to_excel({
+            "atr": atr_df,
+            "consolidation_count": consolidation_candle_count
+        }, Configuration.reportFolder + Configuration.report_file_name)
+        return atr_df, consolidation_candle_count
+
+    def find_atr_for_sector(self, sector: str = "IT", timeframe:str = "days/1", no_of_candles:int = 50):
+        instruments = Instrument().get_sector_instruments(sector)
+
+        data_frame = pd.DataFrame(columns = ["Sector","Stock", "Consolidation Candle Count"])
+        atr_df = pd.DataFrame()
+        for instrument in instruments:
+            df, consolidation_candle_count = self.find_atr(instrument[1], timeframe, no_of_candles)
+            data_frame.loc[len(data_frame)] = [sector, instrument[1],consolidation_candle_count]
+            # Concatenate each returned df
+            atr_df = pd.concat([atr_df, df], ignore_index=True)
+        return atr_df, data_frame
+
+    def find_atr(self, symbol:str = "INFY", timeframe:str = "days/1", no_of_candles:int = 100):
+        table = Utility.getTableForTimeFrame(timeframe)
+        stock_prices = app.fetch_n_candles_stock_prices_from_db(symbol, table, no_of_candles)
+        df = RangeCalculator.find_ATR(stock_prices)
+        consolidation_candle_count = self.check_for_consolidation(df)
+        return df, consolidation_candle_count
+
+
+
+    def fetch_n_candles_stock_prices_from_db(self, symbol: str, table: str, candle_count:int = 200):
+        histDM = HistoricDataManager()
+        stock_price  = histDM.fetch_n_candles_stock_prices_from_db(symbol, table, candle_count)
+        return stock_price
+
+    def find_territories(self,symbol: str = 'INFY', timeframe: str = 'days/1', no_of_candles:int = 100):
+        result = app.find_atr(symbol, timeframe, no_of_candles)
+        if result[0].empty:
+            print("\n\nThere is no records for "+ symbol+ " in the timeframe table\n")
+            result = {}
+        else:
+            modified_result = Utility.add_actual_open(result[0])
+            Utility.add_actual_low_high(modified_result)
+            Utility.add_A_minus_B(modified_result, "close", "actual_open", new_col_name='direction')
+            # print(modified_result[
+            #           ["datetime", "open", "close", "actual_open", "actual_high", "actual_low", 'atrvalue', "range",
+            #            "direction"]].head(30))
+
+            result = Utility.find_sellers_buyers_territory(modified_result)
+            print(modified_result[
+                      ["datetime", "open", "close", "actual_open", "actual_high", "actual_low", 'atrvalue', "range",
+                       "direction"]].head(30))
+
+            results = SupportResistance().analyze_structure_breaks(modified_result, window=2, lookahead=5)
+
+            for r in results:
+                print(r)
+                # print(f"{r['type'].upper()} @ idx {r['level_index']} ₹{r['level_price']}: "
+                #       f"{'BREACHED' if r['breached'] else 'NOT breached'} "
+                #       f"{'breach ₹{'r['breach_price']} at {r['breach_time']}' if r['breached'] else ''} "
+                #         f"{f'→ {r['follow_through_count']} candles, move ₹{r['cumulative_move']}' if r['breached'] else ''}")
+        return result
+
+    def find_territories_for_sector(self, sector: str = 'IT', timeframe:str = 'days/1', no_of_candles:int = 100):
+        instruments = Instrument().get_sector_instruments(sector)
+        print('\nfind_territories_for_sector === '+ sector +'\n\n Instruments == ')
+        print(instruments)
+
+
+        columns = ['Symbol','actual_open', 'close', 'actual_high', 'actual_low',
+                   'guy_who_started_index', 'guy_who_started_date', 'territory_value','territory']
+
+        df = pd.DataFrame(columns=columns)
+        for instrument in instruments:
+            result = self.find_territories(instrument[1], timeframe, no_of_candles)
+
+            if len(result) == 0:
+                print("\n\nSkipping Symbol === " + instrument[1])
+            else:
+                result['symbol'] = instrument[1]
+                result['timeframe'] = timeframe
+
+                df = pd.concat([pd.DataFrame([result]), df], ignore_index=True)
+
+
+        # print("Final Result == ")
+        # print(df)
+        #df.to_excel(sector+".xlsx", sheet_name=sector,  index=False)
+        return df
+
+    def find_territories_for_all_sectors(self, timeframe:str = 'days/1', no_of_candles:int = 100):
+        # Get all sectors
+        all_sectors = Instrument().fetch_all_sectors()
+
+        print("\n\n All Sectors == "+ str(len(all_sectors)))
+        print(all_sectors)
+
+        dictionary = {}
+
+        # Call find_territories_for_sector iterating through each sector
+        for sector in all_sectors["Sector"]:
+            if sector != 'Index' and sector is not None:
+                #if sector == 'FinancialServices':
+                df = self.find_territories_for_sector(sector, timeframe, no_of_candles)
+                if df.empty:
+                    print("For the sector "+ sector + "df is empty")
+                else:
+                    df['sector'] = sector
+                    dictionary[sector] = df
+                    # Write all DataFrames to DB
+                    df = df.rename(columns={"actual_open": "open", 'actual_high': 'high', 'actual_low': 'low',
+                                            'guy_who_started_date': 'guy_who_started'})
+                    Reports().insert_or_update_dataframe(df)
+
+
+
+
+
+
+        # with pd.ExcelWriter(Configuration.reportFolder+'sectors_output.xlsx', engine='openpyxl') as writer:
+        #     for sheet, data in dictionary.items():
+        #         data.to_excel(writer, sheet_name=sheet, index=False)
+
 
 
 if __name__ == "__main__":
     #myMain()
     app = App()
-    #app.myMain()
-    #app.test()
+    app.show_home_screen()
+    #app.find_territories_for_sector('Bank')
+    #app.find_territories_for_all_sectors()
 
-    app.analyzeTrend("stocks_day", "INFY", "2024-03-27", "2025-05-01")
-    app.analyzeTrend("stocks_day", "HDFCBANK", "2024-03-27", "2025-05-01")
+    #app.myMain("IT")
+    #app.get_intraday_OHLC_from_upstox("INFY")
+    #app.get_intraday_OHLC_from_upstox(None,"IT")
+    #app.get_intraday_OHLC_from_upstox()
+
+    #app.get_historic_OHLC_from_upstox_for_sector("HAL")
+    # app.get_historic_OHLC_from_upstox_for_sector(None,"IT")
+    #app.get_historic_OHLC_from_upstox_for_sector()
+
+    #app.get_close_price("INFY","stocks_day","2025-03-01","2025-05-02")
+    #app.get_close_price("INFY", "stocks_day", "2025-03-01")
+
+    # close_prices, dates = app.fetch_n_candles_close_prices_from_db("INFY", "stocks_1h", 40)
+    # slopes_2 = TrendAnalyzer.rolling_slope_trend(close_prices, 2)
+    # slopes_3 = TrendAnalyzer.rolling_slope_trend(close_prices, 3)
+    # slopes_4 = TrendAnalyzer.rolling_slope_trend(close_prices, 4)
+    # slopes_5 = TrendAnalyzer.rolling_slope_trend(close_prices, 5)
+    # slopes_6 = TrendAnalyzer.rolling_slope_trend(close_prices, 6)
+    # slopes_7 = TrendAnalyzer.rolling_slope_trend(close_prices, 7)
+    # slopes_8 = TrendAnalyzer.rolling_slope_trend(close_prices, 8)
+    # slopes_9 = TrendAnalyzer.rolling_slope_trend(close_prices, 9)
+    # slopes_10 = TrendAnalyzer.rolling_slope_trend(close_prices, 10)
+    # for price, slope_2, slope_3, slope_4,slope_5, slope_6, slope_7, slope_8, slope_9, slope_10, date in zip(close_prices, slopes_2, slopes_3, slopes_4, slopes_5, slopes_6, slopes_7, slopes_8, slopes_9, slopes_10, dates):
+    #     print(f"{date} - {price:05.2f} {slope_2:05.2f} {slope_3:05.2f} {slope_4:05.2f} {slope_5:05.2f} {slope_6:05.2f} {slope_7:05.2f} {slope_8:05.2f} {slope_9:05.2f} {slope_10:05.2f}")
+
+    # stock_prices = app.fetch_n_candles_stock_prices_from_db("INFY", "stocks_week", 100)
+    # df, consolidation_candle_count = app.find_atr("INFY","days/1",100)
+    # print(df[0:15])
+    # print("Consolidation candles count == "+str(consolidation_candle_count))
+
+    # all_timeframes_tablemap = [["minutes/1", "stocks_1m"], ["minutes/5", "stocks_5m"], ["minutes/15", "stocks_15m"], ["minutes/75", "stocks_75m"],["hours/1", "stocks_1h"],["days/1", "stocks_day"], ["weeks/1", "stocks_week"], ["months/1", "stocks_month"]]
+    #####################################################
+    # result = app.find_atr(symbol= 'INFY',timeframe="months/1")
+    # modified_result = Utility.add_actual_open(result[0])
+    # Utility.add_actual_low_high(modified_result)
+    # Utility.add_candle_body_to_wick_ratio(modified_result)
+    # Utility.add_upper_wick_lower_wick(modified_result)
+    # Utility.add_upper_lower_wick_body_ratio(modified_result)
+    # Utility.add_A_minus_shiftedB(modified_result, "open", "close", "gap_up_down")
+    # Utility.add_A_minus_B(modified_result, "close", "actual_open", new_col_name='direction')
+    # print(modified_result.columns)
+    # print(modified_result[["datetime","open","close","actual_open","actual_high","actual_low", 'atrvalue', "range", "direction"]].head(30))
+
+    # Utility.find_sellers_buyers_territory(modified_result)
+    # print(modified_result[["datetime", "open", "close", "actual_open", "actual_high", "actual_low", 'atrvalue', "range",
+    #                        "direction"]].head(30))
+    #####################################################
+
+    # atr_details_df, consolidation_candle_count_df = app.find_atr_for_sector(sector = "IT", timeframe = "minutes/5", no_of_candles = 100)
+    # Utility.write_dataframe_to_excel({
+    #         "atr": atr_details_df,
+    #         "consolidation_count": consolidation_candle_count_df
+    #     }, Configuration.reportFolder + "sample.xlsx")
+    # print("Consolidation Count DF")
+    # print(consolidation_candle_count_df)
+    #
+    # print("Atrs DF")
+    # print(atr_details_df.tail(15))
+    # print(atr_details_df.head(15))
+
+    # print(Instrument().fetch_all_sectors())
+    #app.find_atr_for_all_sectors()
+
+    # print("Date == "+ str(stock_prices))
+    # ranges = RangeCalculator.compute_candle_ranges_desc_sorted(stock_prices)
+    # for range in ranges:
+    #     print(range)
+
+
+
+    # Load the ISIN and Symbol from the file to DB
+    #app.load_stocks_isin_symbol()
+
+    #app.analyzeTrend("IRCTC", "2024-03-27", "2025-05-30")
+    #app.analyzeTrend("INFY", "2024-03-27", "2025-05-30")

@@ -19,6 +19,18 @@ class HistoricDataManager:
         for stock in stocks:
             self.get_historical_OHLC_from_upstox_for_one_stock(stock[0], stock[1],candle_count)
 
+    def get_historic_OHLC_from_upstox_for_all_sector_one_timeframe(self, timeframe: str = 'days/1', candle_count: int = 300):
+
+        print("\n\n Timeframe == "+timeframe)
+        # Get the isin for the stock
+        db = get_db()
+        stocks = db.fetch_isin_symbol_from_db()
+
+        fromDate, toDate = Utility.get_start_end_date_for_historic_data_fetch(timeframe, candle_count)
+        for stock in stocks:
+            self.getHistoricDataFromUpstoxForOneSymbol(stock[0], stock[1], timeframe, toDate, fromDate)
+
+
     def get_historic_OHLC_from_upstox_for_one_stock_one_timeframe(self, symbol:str = 'INFY', timeframe:str = "minutes/15", candle_count:int = 200):
         # Get the isin for the stock
         db = get_db()
@@ -37,6 +49,7 @@ class HistoricDataManager:
             self.getHistoricDataFromUpstoxForOneSymbol(ISIN, symbol, timeframe,toDate,fromDate)
 
     def getHistoricDataFromUpstoxForOneSymbol(self, ISIN, symbol, timeframe,toDate,fromDate):
+        print("\n\n Inside getHistoricDataFromUpstoxForOneSymbol  Timeframe == " + timeframe)
 
         url = Configuration.historical_url + ISIN + "/" + timeframe + "/" + str(toDate) + "/" + str(fromDate)
         # print("\n\n" + "Url = " + url + "\n")

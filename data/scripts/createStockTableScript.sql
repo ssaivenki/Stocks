@@ -40,6 +40,20 @@ CREATE TABLE stocks_15m (
     UNIQUE(symbol, date)
 );
 
+-- 75-minute data
+CREATE TABLE stocks_75m (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    symbol VARCHAR(10),
+    date TIMESTAMP,
+    open FLOAT,
+    high FLOAT,
+    low FLOAT,
+    close FLOAT,
+    volume INT,
+    oi INT,
+    UNIQUE(symbol, date)
+);
+
 -- Hourly data
 CREATE TABLE stocks_1h (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -94,4 +108,19 @@ CREATE TABLE stocks_month (
     volume INT,
     oi INT,
     UNIQUE(symbol, date)
+);
+
+CREATE TABLE report_territory (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    symbol VARCHAR(20),
+    sector VARCHAR(50),
+    timeframe VARCHAR(20),
+    open FLOAT,
+    high FLOAT,
+    low FLOAT,
+    close FLOAT,
+    guy_who_started TIMESTAMP,
+    territory_value FLOAT,
+    territory VATCHAR(20),
+    UNIQUE(isin,symbol,timeframe)
 );

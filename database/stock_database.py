@@ -1,5 +1,6 @@
 import mysql.connector
 from typing import List, Union, Tuple
+import pandas as pd
 
 
 class StockDatabase:
@@ -14,14 +15,31 @@ class StockDatabase:
         self.cursor = None
 
     def connect(self):
-        """Establish a database connection."""
-        if not self.conn:
-            self.conn = mysql.connector.connect(**self.config)
+        """Ensure the connection is active and initialize the cursor."""
+        try:
+            if not self.conn or not self.conn.is_connected():
+                self.conn = mysql.connector.connect(
+                    **self.config,
+                    connection_timeout=5,
+                    use_pure=True,
+                    unix_socket=None
+                )
             self.cursor = self.conn.cursor()
+        except mysql.connector.Error as err:
+            print("MySQL Error:", err)
+            self.conn = None
+            self.cursor = None
+        except Exception as ex:
+            print("General Error:", ex)
+            self.conn = None
+            self.cursor = None
+
 
     def close(self) -> object:
         """Close cursor and connection."""
-
+        if self.cursor:
+            self.cursor.close()
+            self.cursor = None
         if self.conn:
             self.conn.close()
             self.conn = None
@@ -35,8 +53,8 @@ class StockDatabase:
          low (float), close (float), volume (int), oi (int)]
         """
         try:
-            print("\nInside upsert_stock_price_data --- \n\n"+table_name +"\n\n")
-            print(records[0])
+            # print("\nInside upsert_stock_price_data --- \n\n"+table_name +"\n\n")
+            # print(records[0])
             self.connect()
             query = f"""
             INSERT INTO `{table_name}` (symbol, date, open, high, low, close, volume, oi)
@@ -73,19 +91,50 @@ class StockDatabase:
         try:
             self.connect()
             if end_date == None:
-                date_comparison = " date > %s "
+                query = f"""
+                SELECT symbol, date, open, high, low, close, volume, oi
+                FROM `{table}`
+                WHERE symbol = %s AND  date > %s 
+                ORDER BY date DESC
+                """
+                self.cursor.execute(query, (symbol, start_date))
             else:
-                date_comparison = " date BETWEEN %s AND %s "
+                query = f"""
+                SELECT symbol, date, open, high, low, close, volume, oi
+                FROM `{table}`
+                WHERE symbol = %s AND  date BETWEEN %s AND %s 
+                ORDER BY date DESC
+                """
+                self.cursor.execute(query, (symbol, start_date, end_date))
+            return self.cursor.fetchall()
+        except mysql.connector.Error as err:
+            print("MySQL Error:", err)
+            return []
+        finally:
+            self.close()
+
+    def fetch_n_candles_stock_prices_from_db(self, table: str, symbol: str, candle_count:int = 200) -> List[Tuple]:
+        """
+        Fetch up to 20 stock data records for a given symbol where date is strictly after start_date.
+
+        Parameters:
+            table (str): From which table to fetch
+            symbol (str): Stock symbol
+            candle_count (int): Number of records (candles) to retrieve
+
+        Returns:
+            List of tuples containing up to candle_count rows of stock data.
+        """
+        try:
+            self.connect()
             query = f"""
             SELECT symbol, date, open, high, low, close, volume, oi
             FROM `{table}`
-            WHERE symbol = %s AND `{date_comparison}`
+            WHERE symbol = %s 
             ORDER BY date DESC
+            LIMIT %s
             """
-            if end_date == None:
-                self.cursor.execute(query, (symbol, start_date))
-            else:
-                self.cursor.execute(query, (symbol, start_date, end_date))
+            self.cursor.execute(query, (symbol, candle_count))
             return self.cursor.fetchall()
         except mysql.connector.Error as err:
             print("MySQL Error:", err)
@@ -125,7 +174,7 @@ class StockDatabase:
         finally:
             self.close()
 
-    def fetch_stocks_isin_symbol(self, sector: str = None) -> List[Tuple]:
+    def fetch_isin_symbol_from_db(self, symbol: str = None, sector: str = None) -> List[Tuple]:
         """
         Fetch stock metadata (ISIN, Symbol, Sector) optionally filtered by sector.
 
@@ -134,28 +183,109 @@ class StockDatabase:
 
         Returns:
             List of tuples containing (ISIN, Symbol, Sector)
+            :param sector:
+            :param symbol:
         """
         try:
+            # print("fetch_isin_symbol_from_db")
+            # print("Sector == "+str(sector))
+            # print("Symbol == "+str(symbol))
             self.connect()
-            if sector:
+            if symbol:
+                # print("Symbol Handling")
                 query = """
                 SELECT isin, symbol, sector
                 FROM stocks
-                WHERE sector = %s
+                WHERE symbol = %s
                 ORDER BY symbol
                 """
-                self.cursor.execute(query, (sector,))
+                self.cursor.execute(query, (symbol,))
             else:
-                query = """
-                SELECT isin, symbol, sector
-                FROM stocks
-                ORDER BY symbol
-                """
-                self.cursor.execute(query)
+                # print("Sector or All Handling")
 
+                if sector:
+                    # print("Sector Handling")
+                    query = """
+                    SELECT isin, symbol, sector
+                    FROM stocks
+                    WHERE sector = %s
+                    ORDER BY symbol
+                    """
+                    self.cursor.execute(query, (sector,))
+                else:
+                    # print("All Handling")
+                    query = """
+                    SELECT isin, symbol, sector
+                    FROM stocks
+                    ORDER BY symbol
+                    """
+                    self.cursor.execute(query)
+            # print("Returning from here")
+            return self.cursor.fetchall()
+        except mysql.connector.Error as err:
+            print("MySQL Error:", err)
+            return []
+        finally:
+            # print("Finally")
+            self.close()
+
+    def fetch_all_sectors(self):
+        try:
+            self.connect()
+
+            query = """
+            SELECT distinct(sector)
+            FROM stocks
+            """
+            self.cursor.execute(query)
             return self.cursor.fetchall()
         except mysql.connector.Error as err:
             print("MySQL Error:", err)
             return []
         finally:
             self.close()
+
+    def insert_or_update_dataframe(self, df: pd.DataFrame):
+        try:
+            self.connect()
+
+            insert_query = """
+            INSERT INTO report_territory (
+                symbol, sector, timeframe, open, high, low, close,
+                guy_who_started, territory_value, territory
+            ) VALUES (
+                %s, %s, %s, %s, %s, %s, %s, %s, %s, %s
+            )
+            ON DUPLICATE KEY UPDATE
+                sector = VALUES(sector),
+                open = VALUES(open),
+                high = VALUES(high),
+                low = VALUES(low),
+                close = VALUES(close),
+                guy_who_started = VALUES(guy_who_started),
+                territory_value = VALUES(territory_value),
+                territory = VALUES(territory)
+            """
+
+            data_to_insert = [
+                (
+                    row['symbol'], row['sector'], row['timeframe'],
+                    row['open'], row['high'], row['low'], row['close'],
+                    row['guy_who_started'].to_pydatetime() if hasattr(row['guy_who_started'], 'to_pydatetime') else row['guy_who_started'],
+                    row['territory_value'], row['territory']
+                )
+                for _, row in df.iterrows()
+            ]
+
+            self.cursor.executemany(insert_query, data_to_insert)
+            self.conn.commit()
+            print(f"{self.cursor.rowcount} rows inserted or updated.")
+
+        except mysql.connector.Error as err:
+            print("MySQL Error:", err)
+
+        except Exception as e:
+            print("Unexpected error:", e)
+
+        finally:
+            self.cursor.close()
