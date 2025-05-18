@@ -1,5 +1,5 @@
-from config import Configuration
-from stock_database import StockDatabase
+from utility.config import Configuration
+from database.stock_database import StockDatabase
 
 _cached_db = None
 

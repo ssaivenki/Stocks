@@ -93,12 +93,12 @@ class Utility:
         wb.save(fileName)
 
     @staticmethod
-    def sentGetRequest( url, headers, requestParams):
+    def sentGetRequest( url, headers, requestParams = None):
 
         # Make a GET request with headers and parameters
         response = requests.get(url, headers=headers, params=requestParams)
         
-        print("======================")
+        print("====================== Req Params == "+requestParams)
 
         return response.text
 
@@ -165,7 +165,7 @@ class Utility:
     @staticmethod
     def getTableForTimeFrame(timeframe: str) -> str:
         # Search the array Configuration.timeframe_tablemap for the timeframe to table map
-        for tf, table in Configuration.timeframe_tablemap:
+        for tf, table in Configuration.timeframe_tablemap_for_historic_data:
             if tf == timeframe:
                 return table
         return None

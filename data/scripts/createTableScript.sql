@@ -95,3 +95,12 @@ CREATE TABLE stocks_month (
     oi INT,
     UNIQUE(symbol, date)
 );
+
+
+CREATE TABLE stocks (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    isin VARCHAR(50),
+    symbol VARCHAR(20),
+    sector VARCHAR(50),
+    UNIQUE(isin,symbol)
+);

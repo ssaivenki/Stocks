@@ -1,6 +1,8 @@
 from typing import List
 import numpy as np
 import matplotlib.pyplot as plt
+from utility.config import Configuration
+from service.fetch_historic_data import  HistoricDataManager
 
 class TrendAnalyzer:
     @staticmethod
@@ -55,7 +57,7 @@ class TrendAnalyzer:
         return slopes
 
     @staticmethod
-    def plot_best_fit_line(data: List[float], title: str):
+    def plot_best_fit_line(data: List[float], title: str, drawZeroLine = 0):
         # Generate x values for the x-axis (e.g., 0, 1, 2, ..., n-1)
         data.reverse()
         x = np.arange(len(data))
@@ -68,9 +70,52 @@ class TrendAnalyzer:
         plt.scatter(x, data, color='blue', label='Data')
         plt.plot(x, best_fit_line, color='red', label='Best Fit Line')
 
+        # Add horizontal line at y = 0
+        if drawZeroLine == 1:
+            plt.axhline(y=0, color='gray', linestyle='--', linewidth=1, label='y = 0')
+
         plt.xlabel('Index')
         plt.ylabel('Value')
         plt.title(title)
         plt.legend()
 
         plt.show()
+
+    @staticmethod
+    def analyzeOneTrendForOneTF(self, symbol: str, table, start_date:str, end_date:str):
+        # Get the close Price
+        close_price = HistoricDataManager.getClosePrice(symbol, table, start_date, end_date)
+        TrendAnalyzer.plot_best_fit_line(close_price[:40], symbol + " " + table + " - close_price_10")
+
+        TrendAnalyzer.smooth_and_plotTrend(close_price, symbol, 10, 100, table + " - close_slopes", 1)
+        TrendAnalyzer.smooth_and_plotTrend(close_price, symbol, 20, 100, table + " - close_slopes", 1)
+        TrendAnalyzer.smooth_and_plotTrend(close_price, symbol, 50, 100, table + " - close_slopes", 1)
+        TrendAnalyzer.smooth_and_plotTrend(close_price, symbol, 100, 100, table + " - close_slopes", 1)
+
+    @staticmethod
+    def analyzeTrend(symbol: str, start_date:str, end_date : str):
+        '''
+
+        :param table:
+        :param symbol:
+        :param start_date:
+        :param end_date:
+        :return:
+
+        Analyze the trend for all the timeframes for a particular symbol
+        '''
+
+
+        #Analyze the Trend for all Time Frame
+        for tf_table in Configuration.timeframe_tablemap_for_intraday :
+            TrendAnalyzer.analyzeOneTrendForOneTF(symbol, tf_table[1], start_date, end_date)
+
+        for tf_table in Configuration.timeframe_tablemap_for_historic_data :
+            TrendAnalyzer.analyzeOneTrendForOneTF(symbol, tf_table[1], start_date, end_date)
+
+    @staticmethod
+    def smooth_and_plotTrend(price, symbol, no_of_candles, no_of_points_to_fit, title, plot_zero):
+        price_slopes = TrendAnalyzer.rolling_slope_trend(price, no_of_candles)
+        print("Closed Price Slopes - Candle count = 10 Symbol = " + symbol + " Table = " + title + str(price_slopes))
+        if len(price_slopes) > no_of_points_to_fit:
+            TrendAnalyzer.plot_best_fit_line(price_slopes[:no_of_points_to_fit], symbol + " " + title + str(no_of_candles), plot_zero)

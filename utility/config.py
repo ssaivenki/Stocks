@@ -7,7 +7,12 @@ class Configuration:
 
     headers = {"accept": "application/json", "Api-Version": "2.0", "Authorization": token }
     symbolsFileName = "symbolInfo.txt"
-    timeframe_tablemap = [["minutes/1","stocks_1m"],["minutes/5","stocks_5m"],["minutes/15","stocks_15m"], ["hours/1","stocks_1h"], ["days/1","stocks_day"],["months/1","stocks_month"],["weeks/1","stocks_week"]]
+    timeframe_tablemap_for_historic_data = [["hours/1", "stocks_1h"],["days/1", "stocks_day"], ["weeks/1", "stocks_week"], ["months/1", "stocks_month"]]
+    timeframe_tablemap_for_intraday = [["minutes/1", "stocks_1m"], ["minutes/5", "stocks_5m"], ["minutes/15", "stocks_15m"],
+                          ["hours/1", "stocks_1h"]]
+
+    all_timeframes_tablemap = [["minutes/1", "stocks_1m"], ["minutes/5", "stocks_5m"], ["minutes/15", "stocks_15m"],
+                          ["hours/1", "stocks_1h"],["days/1", "stocks_day"], ["weeks/1", "stocks_week"], ["months/1", "stocks_month"]]
 
     # Upstocks URL
     historical_url = "https://api.upstox.com/v3/historical-candle/"
