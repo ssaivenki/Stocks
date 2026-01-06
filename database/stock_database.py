@@ -252,9 +252,9 @@ class StockDatabase:
             insert_query = """
             INSERT INTO report_territory (
                 symbol, sector, timeframe, open, high, low, close,
-                guy_who_started, territory_value, territory
+                guy_who_started, territory_value, territory, available_territory
             ) VALUES (
-                %s, %s, %s, %s, %s, %s, %s, %s, %s, %s
+                %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s
             )
             ON DUPLICATE KEY UPDATE
                 sector = VALUES(sector),
@@ -264,7 +264,8 @@ class StockDatabase:
                 close = VALUES(close),
                 guy_who_started = VALUES(guy_who_started),
                 territory_value = VALUES(territory_value),
-                territory = VALUES(territory)
+                territory = VALUES(territory),
+                available_territory = VALUES(available_territory)
             """
 
             data_to_insert = [
@@ -272,7 +273,7 @@ class StockDatabase:
                     row['symbol'], row['sector'], row['timeframe'],
                     row['open'], row['high'], row['low'], row['close'],
                     row['guy_who_started'].to_pydatetime() if hasattr(row['guy_who_started'], 'to_pydatetime') else row['guy_who_started'],
-                    row['territory_value'], row['territory']
+                    row['territory_value'], row['territory'], row['available_territory']
                 )
                 for _, row in df.iterrows()
             ]

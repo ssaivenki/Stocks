@@ -27,7 +27,7 @@ class IntradayDataManager:
             responseJson = Utility.sentGetRequest(finalurl, Configuration.headers, reqParams)
 
             stockData = json.loads(responseJson)
-            print(stockData)
+            # print(stockData)
             header = ["Date", "Open", "High", "Low", "Close", "Volume", "OI"]
             tableName = tf_table_map[1]
             CommonServices.writeToDB(stockData, tableName, symbol)

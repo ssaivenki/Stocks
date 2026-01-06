@@ -157,7 +157,7 @@
 {"ISIN" : "NSE_EQ%7CINE883A01011","Symbol":"MRF","Sector":"Auto"},
 {"ISIN" : "NSE_EQ%7CINE414G01012","Symbol":"MUTHOOTFIN","Sector":"MidFinServices"},
 {"ISIN" : "NSE_EQ%7CINE139A01034","Symbol":"NATIONALUM","Sector":"MetalsMining"},
-{"ISIN" : "NSE_EQ%7CINE663F01024","Symbol":"NAUKRI","Sector":"IT"},
+{"ISIN" : "NSE_EQ%7CINE663F01032","Symbol":"NAUKRI","Sector":"IT"},
 {"ISIN" : "NSE_EQ%7CINE048G01026","Symbol":"NAVINFLUOR","Sector":"Chemicals"},
 {"ISIN" : "NSE_EQ%7CINE584A01023","Symbol":"NMDC","Sector":"MetalsMining"},
 {"ISIN" : "NSE_EQ%7CINE733E01010","Symbol":"NTPC","Sector":"Energy"},

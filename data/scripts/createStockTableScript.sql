@@ -121,6 +121,7 @@ CREATE TABLE report_territory (
     close FLOAT,
     guy_who_started TIMESTAMP,
     territory_value FLOAT,
+    available_territory FLOAT,
     territory VATCHAR(20),
     UNIQUE(isin,symbol,timeframe)
 );

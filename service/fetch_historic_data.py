@@ -49,21 +49,24 @@ class HistoricDataManager:
             self.getHistoricDataFromUpstoxForOneSymbol(ISIN, symbol, timeframe,toDate,fromDate)
 
     def getHistoricDataFromUpstoxForOneSymbol(self, ISIN, symbol, timeframe,toDate,fromDate):
-        print("\n\n Inside getHistoricDataFromUpstoxForOneSymbol  Timeframe == " + timeframe)
+        # print("\n\n Inside getHistoricDataFromUpstoxForOneSymbol  Timeframe == " + timeframe)
 
         url = Configuration.historical_url + ISIN + "/" + timeframe + "/" + str(toDate) + "/" + str(fromDate)
+
         # print("\n\n" + "Url = " + url + "\n")
         responseJson = Utility.sentGetRequest(url,Configuration.headers)
 
+        # print("\n\nResponse from Upstox:", repr(responseJson))
         dataJson = json.loads(responseJson)
         if dataJson["status"] == 'error':
-            print(dataJson)
+            print("Symbol = ", symbol, dataJson)
             if dataJson["errors"][0]['errorCode'] == 'UDAPI10005':
+                print("UDAPI10005 Error. Sleeping for 15 seconds")
                 time.sleep(15)
                 return self.getHistoricDataFromUpstoxForOneSymbol(ISIN,symbol,timeframe,toDate,fromDate)
         else:
             tableName = Utility.getTableForTimeFrame(timeframe)
-            print(dataJson)
+            # print(dataJson)
 
             # print("Write to the table "+ str(tableName) + "Symbol = "+str(symbol) )
             CommonServices.writeToDB(dataJson, tableName, symbol)
@@ -138,7 +141,7 @@ class HistoricDataManager:
     def fetch_n_candles_stock_prices_from_db(self, symbol: str, table: str, candle_count:int = 200):
         db = get_db()
         stock_data = db.fetch_n_candles_stock_prices_from_db(table, symbol, candle_count)
-        print("Inside fetch_n_candles_stock_prices_from_db Table = "+table + " Symbol = "+symbol)
+        # print("Inside fetch_n_candles_stock_prices_from_db Table = "+table + " Symbol = "+symbol)
         # print(stock_data)
         return stock_data
 

@@ -8,6 +8,8 @@ import requests
 import json
 import os
 import pandas as pd
+import  gzip, io
+
 
 from service.range_calculator import RangeCalculator
 from service.fetch_historic_data import HistoricDataManager
@@ -373,33 +375,49 @@ class App:
 
         return response.text
     '''
+
+    def load_stocks_isin_symbol(self):
+        Instrument().load_stocks_isin_symbol()
+
     def show_home_screen(self):
         # global s, u
         # global profile
 
         print('\n*** Welcome to Upstox API ***\n\n')
+        print('0. Load the symbols and isin code from File to DB \n')
         print('1. Get Historic Price for all Symbols for all Timeframe\n')
         print('2. Get Intraday Price for all Symbols for intraday Timeframe  \n')
         print('3. Find 1 day Territories for all stocks and Load in DB\n')
         print('4. Find 75m Territories for all stocks and Load in DB\n')
         print('5. Find 15m Territories for all stocks and Load in DB\n')
         print('6. Find 5m Territories for all stocks and Load in DB\n')
-        print('7. Find 5m Territories for one stock and Load in DB\n')
-        print('8. Find 15m Territories for one stock and Load in DB\n')
-        print('9. Get Historic Price for one Symbols for 5m Timeframe\n')
-        print('10. Get Historic Price for all Symbols for one TimeFrame\n')
+
+        print('7. Find 1 week Territories for one stock and Load in DB\n')
+        print('8. Find 1 Month Territories for one stock and Load in DB\n')
+        print('9. Find 5m Territories for one stock and Load in DB\n')
+        print('10. Find 15m Territories for one stock and Load in DB\n')
+        print('11. Find 75M Territories for one stock and Load in DB\n')
+        print('12. Find 1day Territories for one stock and Load in DB\n')
+        print('13. Find 1week Territories for one stock and Load in DB\n')
+        print('14. Find 1month Territories for one stock and Load in DB\n')
+        print('15. Get Historic Price for one Symbols for 5m Timeframe\n')
+        print('16. Get Historic Price for all Symbols for one TimeFrame\n')
+        print('17. Find Territories for all Stocks all Timeframe\n')
+        print('18. Find the instruments in NSE')
 
         selection = input('Select your option: \n')
         
         try:
             int(selection)
         except:
-            self.clear_screen()
+            # self.clear_screen()
             self.show_home_screen()
 
         selection = int(selection)
         self.clear_screen()
-        if selection == 1:
+        if selection == 0:
+            self.load_stocks_isin_symbol()
+        elif selection == 1:
             self.get_historic_OHLC_from_upstox_for_sector()
             # pprint(profile)
         elif selection == 2:
@@ -414,21 +432,38 @@ class App:
             self.find_territories_for_all_sectors('minutes/5')
         #     if product is not None:
         #         pprint(u.get_live_feed(product, LiveFeedType.LTP))
+
         elif selection == 7:
-            stock = input('Enter the Stock : \n')
-            self.find_territories(stock, 'minutes/5')
+            self.find_territories_for_all_sectors( 'weeks/1')
         elif selection == 8:
+            self.find_territories_for_all_sectors( 'months/1')
+        elif selection == 9:
             stock = input('Enter the Stock : \n')
-            self.find_territories(stock, 'minutes/15')
+            self.find_territories(stock, 'minutes/5', 100, True)
+        elif selection == 10:
+            stock = input('Enter the Stock : \n')
+            self.find_territories(stock, 'minutes/15', 100, True)
+        elif selection == 11:
+            stock = input('Enter the Stock : \n')
+            self.find_territories(stock, 'minutes/75', 100, True)
+        elif selection == 12:
+            stock = input('Enter the Stock : \n')
+            self.find_territories(stock, 'days/1', 100, True)
+        elif selection == 13:
+            stock = input('Enter the Stock : \n')
+            self.find_territories(stock, 'weeks/1', 100, True)
+        elif selection == 14:
+            stock = input('Enter the Stock : \n')
+            self.find_territories(stock, 'months/1', 100, True)
         #     product = select_product()
         #     if product is not None:
         #         pprint(u.get_live_feed(product, LiveFeedType.Full))
         # elif selection == 8:
         #     socket_example()
-        elif selection == 9:
+        elif selection == 15:
             stock = input('Enter the Stock : \n')
             self.get_historic_OHLC_from_upstox_for_one_stock_one_timeframe(stock)
-        elif selection == 10:
+        elif selection == 16:
             candle_count = 200
             print("Type 1 for day")
             print("Type 2 for week")
@@ -472,6 +507,16 @@ class App:
                 timeframe = 'days/1'
             print("Inside home screen "+timeframe)
             HistoricDataManager().get_historic_OHLC_from_upstox_for_all_sector_one_timeframe(timeframe, candle_count)
+        elif selection == 17:
+            self.find_territories_for_all_sectors(timeframe='months/1')
+            self.find_territories_for_all_sectors(timeframe='weeks/1')
+            self.find_territories_for_all_sectors(timeframe='days/1')
+            self.find_territories_for_all_sectors(timeframe='minutes/75')
+            self.find_territories_for_all_sectors(timeframe='minutes/15')
+            self.find_territories_for_all_sectors(timeframe='minutes/5')
+        elif selection == 18:
+            self.get_instruments()
+
         self.show_home_screen();
 
 
@@ -630,8 +675,7 @@ class App:
             pass
         return None
 
-    def load_stocks_isin_symbol(self):
-        instrument.load_stocks_isin_symbol()
+
 
     def get_close_price(self,symbol: str, table: str, stare_date: str, end_date: str = None):
         histDM = HistoricDataManager()
@@ -688,10 +732,16 @@ class App:
         return atr_df, data_frame
 
     def find_atr(self, symbol:str = "INFY", timeframe:str = "days/1", no_of_candles:int = 100):
+        # print("Time Frame = ",timeframe)
         table = Utility.getTableForTimeFrame(timeframe)
+        # print("Table = ", table)
+        # print("no_of_candles = ", no_of_candles)
         stock_prices = app.fetch_n_candles_stock_prices_from_db(symbol, table, no_of_candles)
+        # print("Stock Prices == ", stock_prices)
         df = RangeCalculator.find_ATR(stock_prices)
+        # print("DataFrame == ", df)
         consolidation_candle_count = self.check_for_consolidation(df)
+        # print("Consolidated Candle COunt == ", consolidation_candle_count)
         return df, consolidation_candle_count
 
 
@@ -701,7 +751,7 @@ class App:
         stock_price  = histDM.fetch_n_candles_stock_prices_from_db(symbol, table, candle_count)
         return stock_price
 
-    def find_territories(self,symbol: str = 'INFY', timeframe: str = 'days/1', no_of_candles:int = 100):
+    def find_territories(self, symbol: str = 'INFY', timeframe: str = 'days/1', no_of_candles:int = 100, insert_db_flag:bool = False):
         result = app.find_atr(symbol, timeframe, no_of_candles)
         if result[0].empty:
             print("\n\nThere is no records for "+ symbol+ " in the timeframe table\n")
@@ -715,14 +765,45 @@ class App:
             #            "direction"]].head(30))
 
             result = Utility.find_sellers_buyers_territory(modified_result)
-            print(modified_result[
-                      ["datetime", "open", "close", "actual_open", "actual_high", "actual_low", 'atrvalue', "range",
-                       "direction"]].head(30))
+            if insert_db_flag:
+                result["symbol"] = symbol
+                result["timeframe"] = timeframe
 
-            results = SupportResistance().analyze_structure_breaks(modified_result, window=2, lookahead=5)
+                instrument = Instrument().get_symbol_instruments(symbol)
+                print("Instrument == ", instrument)
+                result["sector"] = instrument[0][2]
 
-            for r in results:
-                print(r)
+                db_row = {
+                    "symbol": result["symbol"],
+                    "sector": result["sector"],
+                    "timeframe": result["timeframe"],
+
+                    "open": result["actual_open"],
+                    "high": result["actual_high"],
+                    "low": result["actual_low"],
+                    "close": result["close"],
+
+                    "guy_who_started": result["guy_who_started_date"],
+                    "territory_value": result["territory_value"],
+                    "territory": result["territory"],
+                    "available_territory": result["available_territory"]
+                }
+
+                df = pd.DataFrame([db_row])
+                Reports().insert_or_update_dataframe(df)
+                print("Result ----------------------------------")
+                print(result)
+
+                print("Result ----------------------------------")
+
+            # print(modified_result[
+            #           ["datetime", "open", "close", "actual_open", "actual_high", "actual_low", 'atrvalue', "range",
+            #            "direction"]].head(30))
+            #
+            # results = SupportResistance().analyze_structure_breaks(modified_result, window=2, lookahead=5)
+            #
+            # for r in results:
+            #     print(r)
                 # print(f"{r['type'].upper()} @ idx {r['level_index']} ₹{r['level_price']}: "
                 #       f"{'BREACHED' if r['breached'] else 'NOT breached'} "
                 #       f"{'breach ₹{'r['breach_price']} at {r['breach_time']}' if r['breached'] else ''} "
@@ -731,8 +812,8 @@ class App:
 
     def find_territories_for_sector(self, sector: str = 'IT', timeframe:str = 'days/1', no_of_candles:int = 100):
         instruments = Instrument().get_sector_instruments(sector)
-        print('\nfind_territories_for_sector === '+ sector +'\n\n Instruments == ')
-        print(instruments)
+        # print('\nfind_territories_for_sector === '+ sector +'\n\n Instruments == ')
+        # print(instruments)
 
 
         columns = ['Symbol','actual_open', 'close', 'actual_high', 'actual_low',
@@ -760,10 +841,11 @@ class App:
         # Get all sectors
         all_sectors = Instrument().fetch_all_sectors()
 
-        print("\n\n All Sectors == "+ str(len(all_sectors)))
-        print(all_sectors)
+        # print("\n\n All Sectors == "+ str(len(all_sectors)))
+        # print(all_sectors)
 
         dictionary = {}
+        master_rows = []
 
         # Call find_territories_for_sector iterating through each sector
         for sector in all_sectors["Sector"]:
@@ -779,16 +861,35 @@ class App:
                     df = df.rename(columns={"actual_open": "open", 'actual_high': 'high', 'actual_low': 'low',
                                             'guy_who_started_date': 'guy_who_started'})
                     Reports().insert_or_update_dataframe(df)
-
-
-
-
-
+                    master_rows.append(df.copy())
 
         # with pd.ExcelWriter(Configuration.reportFolder+'sectors_output.xlsx', engine='openpyxl') as writer:
         #     for sheet, data in dictionary.items():
         #         data.to_excel(writer, sheet_name=sheet, index=False)
+        master_df = pd.concat(master_rows, ignore_index=True)
+        Utility.writeToExcelFolder("C:\\Users\\saive\\Sai\\StockMarket\\APICoding\\data", "territories.xlsx", "territories", master_df)
 
+    def get_instruments(self):
+
+        url = "https://assets.upstox.com/market-quote/instruments/exchange/complete.json.gz"
+        resp = requests.get(url)
+        resp.raise_for_status()
+
+        with gzip.GzipFile(fileobj=io.BytesIO(resp.content)) as f:
+            data = json.load(f)
+
+        df = pd.DataFrame(data)
+
+        # Filter only NSE_INDEX entries
+        indices_df = df[df['segment'] == 'NSE_INDEX']
+
+        # Show all index trading symbols with their instrument_key
+        print(indices_df[['trading_symbol', 'instrument_key']].sort_values('trading_symbol'))
+
+        pd.set_option('display.max_rows', None)
+        pd.set_option('display.max_colwidth', None)
+
+        print(indices_df[['trading_symbol', 'instrument_key']])
 
 
 if __name__ == "__main__":
@@ -873,3 +974,5 @@ if __name__ == "__main__":
 
     #app.analyzeTrend("IRCTC", "2024-03-27", "2025-05-30")
     #app.analyzeTrend("INFY", "2024-03-27", "2025-05-30")
+
+

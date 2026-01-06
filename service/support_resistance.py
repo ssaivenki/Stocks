@@ -71,6 +71,9 @@ class SupportResistance:
         support_levels = []
         resistance_levels = []
 
+        # print('Inside find_support_resistance_with_direction_window')
+        # print(df[0:30])
+
         for i in range(window, len(df) - window):
             prev_dir = df['direction'].iloc[i - window:i]
             next_dir = df['direction'].iloc[i:i + window]
@@ -90,10 +93,15 @@ class SupportResistance:
         support_breaches = self.check_breach_after_pullback(df, support, is_resistance=False, lookahead=lookahead)
         resistance_breaches = self.check_breach_after_pullback(df, resistance, is_resistance=True, lookahead=lookahead)
 
-        print("Support Breaches")
-        print(support_breaches)
-        print("Resistance Breaches")
-        print(resistance_breaches)
+        # print("Support Levels == ")
+        # print(support)
+        # print("Resistance Levels == ")
+        # print(resistance)
+        #
+        # print("Support Breaches")
+        # print(support_breaches)
+        # print("Resistance Breaches")
+        # print(resistance_breaches)
 
         return support_breaches + resistance_breaches
 

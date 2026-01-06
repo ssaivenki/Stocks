@@ -465,7 +465,7 @@ class Utility:
     @staticmethod
     def convert_ist_to_utc_naive(dt_str: str) -> datetime:
         # Parse the datetime with IST offset
-        print(dt_str)
+        # print(dt_str)
         aware_dt = datetime.fromisoformat(dt_str)
         # Convert to UTC
         utc_dt = aware_dt.astimezone(ZoneInfo("UTC"))
@@ -484,11 +484,11 @@ class Utility:
 
         SupportResistance().analyze_structure_breaks(reverse_df)
         length = len(reverse_df)
-        print("Candles is given below ..... ")
-        print(reverse_df.head(30))
+        # print("Candles is given below ..... ")
+        # print(reverse_df.head(30))
         direction = 'direction'
         last_30_rows = reverse_df.tail(30)
-        print(last_30_rows)
+        # print(last_30_rows)
         no_of_positive_candles = 0
         no_of_negative_candles = 0
         cumulative_positive_value = 0
@@ -496,7 +496,7 @@ class Utility:
         index = len(last_30_rows) - 1
         slow_down = ''
         candles = []
-        print("Slowdown === ")
+        # print("Slowdown === ")
         check_positive_candles = True
         if last_30_rows.iloc[index][direction] > 0:
             check_positive_candles = True
@@ -510,7 +510,7 @@ class Utility:
         index -= 1
 
         for i in range(index, 0, -1):
-            print(i)
+            # print(i)
             direction_value = last_30_rows.iloc[i][direction]
             if  direction_value > 0 and check_positive_candles == True:
                 no_of_positive_candles += 1
@@ -538,8 +538,8 @@ class Utility:
         else:
             candles.append(str(no_of_negative_candles)+"_DN_"+str(round(cumulative_negative_value, 1)))
         candles.reverse()
-        for i in candles:
-            print(i)
+        # for i in candles:
+        #     print(i)
         return candles
 
 
@@ -616,7 +616,7 @@ class Utility:
         first_record = reverse_df.iloc[0]
         slow_down = Utility.check_for_slow_down(reverse_df)
         Utility.check_for_multiple_slow_down(reverse_df)
-        print("\n\nSlowDown == "+slow_down+"\n\n")
+        # print("\n\nSlowDown == "+slow_down+"\n\n")
         #print(reverse_df.head(30))
         # print(first_record)
         # print(type(first_record))
@@ -644,9 +644,13 @@ class Utility:
         #print(territory)
         for i in range(1, len(reverse_df)):
             Utility.check_for_breach(territory, i, reverse_df)
-        print("Final ")
+        # print("Final ")
         territory[guy_who_started_date] = reverse_df[reverse_df['index'] == territory['guy_who_started_index']].iloc[0]['datetime']
         territory['territory_value'] = territory['close'] - territory['actual_open']
+
+        latest_record = df.iloc[0]
+        territory['available_territory'] = territory['close'] - latest_record['close']
+        # print("\n\n\nAvailable territory = "+str(territory['available_territory'])+"\n\n\n")
         if territory['territory_value'] > 0:
             territory['territory'] = 'Buyers'
         else:
